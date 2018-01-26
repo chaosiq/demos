@@ -1,0 +1,11 @@
+cherrypy
+click
+flask
+Flask-Admin
+Flask-Opentracing
+Flask-SQLAlchemy
+jaeger-client
+prometheus_flask_exporter
+psycopg2
+sqlalchemy
+wsgi-request-logger
