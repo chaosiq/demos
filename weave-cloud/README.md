@@ -1,6 +1,6 @@
 # Chaos Experiments with Chaos Toolkit and Weave Cloud
 
-## Overview
+## Overview
 
 This demo will walk you through experimenting chaos engineering against a
 Kubernetes cluster, with [Weave Cloud][weavecloud] deployed, using the
