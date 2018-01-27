@@ -36,6 +36,64 @@ function install_helm () {
     done
 }
 
+function init_db () {
+    local user="stolon"
+    local passwd="password1"
+    local dbname="cosmos"
+
+    echo "Creating the application database"
+    while true;
+    do
+        echo "Waiting for database to be available"
+        sleep 10s
+        if kubectl exec stolon-keeper-0 ps aux | grep "streaming"; then
+            break
+        fi
+    done
+
+    local stolon_port=$(kubectl get svc -o jsonpath='{.spec.ports[0].nodePort}' stolon-proxy-service)
+
+    PGPASSWORD=$passwd psql postgres -h $(minikube ip) -p ${stolon_port} \
+        -U $user -w -c "CREATE DATABASE $dbname WITH ENCODING 'UTF8'"
+
+    PGPASSWORD=$passwd psql -h $(minikube ip) -p ${stolon_port} \
+        -U $user -d $dbname -w <<EOF
+CREATE SEQUENCE star_id_seq START 10000;
+
+CREATE TABLE public.star
+(
+  id integer NOT NULL DEFAULT nextval('star_id_seq'::regclass),
+  name character varying(120) NOT NULL,
+  discovered_by character varying(120) NOT NULL,
+  description character varying NOT NULL,
+  link character varying NOT NULL,
+  img_link character varying,
+  CONSTRAINT star_pkey PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE public.star
+  OWNER TO $user;
+
+CREATE INDEX star_name_idx
+  ON public.star
+  USING btree
+  (name COLLATE pg_catalog."default");
+EOF
+
+    echo "Loading some data into the database"
+    PGPASSWORD=$passwd psql -h $(minikube ip) -p ${stolon_port} \
+        -U $user -d $dbname -w <<EOF
+INSERT INTO star (name, discovered_by, description, link, img_link)
+VALUES ('Antares', 'Unknown', 'Antares A is a red supergiant star with a stellar classification of M1.5Iab-Ib, and is indicated to be a spectral standard for that class.', 'https://en.wikipedia.org/wiki/Antares', 'https://upload.wikimedia.org/wikipedia/commons/1/15/Redgiants.svg');
+
+INSERT INTO star (name, discovered_by, description, link, img_link)
+VALUES ('KY Cygni', 'Unknown', 'KY Cygni is a red supergiant of spectral class M3.5Ia located in the constellation Cygnus. It is one of the largest stars known.', 'https://en.wikipedia.org/wiki/KY_Cygni', 'https://upload.wikimedia.org/wikipedia/commons/0/07/Sadr_Region_rgb.jpg');
+
+EOF
+}
+
 function boot () {
     echo "Deploying storage"
     helm repo add rook-master https://charts.rook.io/master 
@@ -91,18 +149,7 @@ function boot () {
     kubectl create secret tls frontend-tls --key apps/frontend/tls.key \
         --cert apps/frontend/tls.crt
 
-    echo "Creating the application database"
-    while true;
-    do
-        echo "Waiting for database to be available"
-        sleep 10s
-        if kubectl exec stolon-keeper-0 ps aux | grep "streaming"; then
-            local stolon_port=$(kubectl get svc -o jsonpath='{.spec.ports[0].nodePort}' stolon-proxy-service)
-            PGPASSWORD=password1 psql postgres -h $(minikube ip) -p ${stolon_port} \
-                -U stolon -w -c "CREATE DATABASE cosmos WITH ENCODING 'UTF8'"
-            break
-        fi
-    done
+    init_db
 
     echo "Deploying the application"
     kubectl create -f manifests/frontend.yaml
