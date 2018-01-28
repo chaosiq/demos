@@ -1,0 +1,60 @@
+{
+    "version": "1.0.0",
+    "title": "Terminate a database instance should not prevent application from running",
+    "description": "As we are relying on Stolon to provide HA PostgreSQL, we expect that the application should run fine even when one PostgreSQL instance goes away",
+    "tags": [
+        "kubernetes",
+        "postgresql",
+        "cloudnative"
+    ],
+    "steady-state-hypothesis": {
+        "title": "Services are all available and healthy",
+        "probes": [
+            {
+                "type": "probe",
+                "name": "application-should-be-alive-and-healthy",
+                "tolerance": true,
+                "provider": {
+                    "type": "python",
+                    "module": "chaosk8s.probes",
+                    "func": "microservice_available_and_healthy",
+                    "arguments": {
+                        "name": "frontend-app",
+                        "ns": "default"
+                    }
+                }
+            },
+            {
+                "type": "probe",
+                "name": "application-must-respond",
+                "tolerance": 200,
+                "provider": {
+                    "type": "http",
+                    "verify_tls": false,
+                    "url": "https://app.cosmos.foo/"
+                }
+            }
+        ]
+    },
+    "method": [
+        {
+            "type": "action",
+            "name": "terminate-db-pod",
+            "provider": {
+                "type": "python",
+                "module": "chaosk8s.pod.actions",
+                "func": "terminate_pods",
+                "arguments": {
+                    "label_selector": "app=stolon-keeper",
+                    "name_pattern": "stolon-keeper-[0-9]$",
+                    "rand": true,
+                    "ns": "default"
+                }
+            },
+            "pauses": {
+                "after": 5
+            }
+        }
+    ],
+    "rollbacks": []
+}
