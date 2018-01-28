@@ -122,3 +122,16 @@ $ minikube delete
 Obviously, if you did not use minikube, you will have to clean up manually.
 
 Notice that weave cloud should then not be able to see your cluster.
+
+## Run Chaos Experiments
+
+Once your environment is up and running, you can start running experiments
+against it. You will find a set of pre-defined ones in the `experiments`
+directory. To run one, use the [chaostoolkit][chaostoolkit] as follows:
+
+```console
+$ chaos run experiments/terminate-db-instance.json
+```
+
+
+
