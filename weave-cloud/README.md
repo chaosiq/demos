@@ -8,8 +8,7 @@ Kubernetes cluster, with [Weave Cloud][weavecloud] deployed, using the
 
 [chaostoolkit]: http://chaostoolkit.org/
 [weavecloud]: https://cloud.weave.works/
-[rook]: https://rook.io/
-[stolon]: http://stolon.io/
+[patroni]: https://github.com/zalando/patroni
 [nginx]: https://github.com/kubernetes/ingress-nginx
 [etcd]: https://github.com/coreos/etcd
 [rbac]: https://kubernetes.io/docs/admin/authorization/rbac/
@@ -19,9 +18,8 @@ Kubernetes cluster, with [Weave Cloud][weavecloud] deployed, using the
 
 This demo tries to showcase a fairly rich stack:
 
-* storage: a distributed block storage provided by [rook][rook]
 * k/v store: a distributed K/V store via [etcd][etcd]
-* database: a replicated PostgreSQL through [stolon][stolon]
+* database: a replicated PostgreSQL through [patroni][patroni]
 * ingress: a L7 ingress controller via [nginx][nginx]
 * a basic web application
 
@@ -29,9 +27,6 @@ In additon, the Kubernetes cluster is in version 1.8 and has [RBAC][rbac]
 enabled.
 
 ### Functional Dependencies
-
-Both the K/V store and the database are configured to use the distributed
-storage and therefore rely on its availability.
 
 The database controller relies on the K/V store to be available.
 
@@ -55,12 +50,9 @@ You will also need to install the following programs locally:
 
 * [kubectl][kubectl]
 * [helm][helm]
-* [psql][postgresql]: the PostgreSQL client (you likely need to install the
-  whole package sadly)
 
 [kubectl]: https://kubernetes.io/docs/tasks/tools/install-kubectl/
 [helm]: https://github.com/kubernetes/helm
-[postgresql]: https://www.postgresql.org/download/
 
 ### Weave Cloud Account
 

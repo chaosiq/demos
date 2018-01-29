@@ -75,14 +75,14 @@ spec:
         image: chaosiq/demos-weave-cloud-frontend-app
         env:
         - name: PG_ADDR
-          value: stolon-proxy-service:5432
+          value: db-patroni.default.svc.cluster.local:5432
         - name: PG_USERNAME
-          value: stolon
-        - name: PG_PWD
+          value: frontend
+        - name: PG_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: stolon
-              key: password
+              name: frontend-secret
+              key: dbpassword
         livenessProbe:
           httpGet:
             path: "/live"

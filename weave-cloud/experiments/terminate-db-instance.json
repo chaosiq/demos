@@ -45,8 +45,8 @@
                 "module": "chaosk8s.pod.actions",
                 "func": "terminate_pods",
                 "arguments": {
-                    "label_selector": "app=stolon-keeper",
-                    "name_pattern": "stolon-keeper-[0-9]$",
+                    "label_selector": "component=db-patroni",
+                    "name_pattern": "db-patroni-[0-9]$",
                     "rand": true,
                     "ns": "default"
                 }

@@ -37,105 +37,39 @@ function install_helm () {
 }
 
 function init_db () {
-    local user="stolon"
-    local passwd="password1"
+    local superuserpwd=$(kubectl get secret --namespace default db-patroni -o jsonpath="{.data.password-superuser}" | base64 --decode)
+    local user="frontend"
+    local passwd="notsosecret"
     local dbname="cosmos"
 
-    echo "Creating the application database"
-    while true;
-    do
-        echo "Waiting for database to be available"
-        sleep 10s
-        if kubectl exec stolon-keeper-0 ps aux | grep "streaming"; then
-            break
-        fi
-    done
+    # hackish, but we must locate the leader for write access
+    local podname="db-patroni-0"
+    if ! kubectl logs $podname | grep "i am the leader"; then
+        podname="db-patroni-1"
+    fi
 
-    local stolon_port=$(kubectl get svc -o jsonpath='{.spec.ports[0].nodePort}' stolon-proxy-service)
-
-    PGPASSWORD=$passwd psql postgres -h $(minikube ip) -p ${stolon_port} \
-        -U $user -w -c "CREATE DATABASE $dbname WITH ENCODING 'UTF8'"
-
-    PGPASSWORD=$passwd psql -h $(minikube ip) -p ${stolon_port} \
-        -U $user -d $dbname -w <<EOF
-CREATE SEQUENCE star_id_seq START 10000;
-
-CREATE TABLE public.star
-(
-  id integer NOT NULL DEFAULT nextval('star_id_seq'::regclass),
-  name character varying(120) NOT NULL,
-  discovered_by character varying(120) NOT NULL,
-  description character varying NOT NULL,
-  link character varying NOT NULL,
-  img_link character varying,
-  CONSTRAINT star_pkey PRIMARY KEY (id)
-)
-WITH (
-  OIDS=FALSE
-);
-ALTER TABLE public.star
-  OWNER TO $user;
-
-CREATE INDEX star_name_idx
-  ON public.star
-  USING btree
-  (name COLLATE pg_catalog."default");
-EOF
-
-    echo "Loading some data into the database"
-    PGPASSWORD=$passwd psql -h $(minikube ip) -p ${stolon_port} \
-        -U $user -d $dbname -w <<EOF
-INSERT INTO star (name, discovered_by, description, link, img_link)
-VALUES ('Antares', 'Unknown', 'Antares A is a red supergiant star with a stellar classification of M1.5Iab-Ib, and is indicated to be a spectral standard for that class.', 'https://en.wikipedia.org/wiki/Antares', 'https://upload.wikimedia.org/wikipedia/commons/1/15/Redgiants.svg');
-
-INSERT INTO star (name, discovered_by, description, link, img_link)
-VALUES ('KY Cygni', 'Unknown', 'KY Cygni is a red supergiant of spectral class M3.5Ia located in the constellation Cygnus. It is one of the largest stars known.', 'https://en.wikipedia.org/wiki/KY_Cygni', 'https://upload.wikimedia.org/wikipedia/commons/0/07/Sadr_Region_rgb.jpg');
-
-EOF
+    kubectl cp apps/frontend/db.sql $podname:/tmp/db.sql
+    kubectl exec $podname -- bash -c "PGPASSWORD=$superuserpwd psql -U postgres -d postgres -a -f /tmp/db.sql"
 }
 
 function boot () {
-    echo "Deploying storage"
-    helm repo add rook-master https://charts.rook.io/master 
-    # took doesn't seem to match its docker images with what helm suggests
-    # local rook_latest=$(helm search rook | awk '{if (NR!=1) print $2}')
-    helm install --name rook --tiller-namespace=default rook-master/rook \
-        --version v0.6.0-129.g9305bd8 --set image.tag=master
-    while true;
-    do
-        echo "Waiting for storage to be ready"
-        sleep 5s
-        if kubectl get pods --selector app=rook-agent | grep Running; then
-            kubectl apply -f manifests/storage-post-config.yaml
-            sleep 10s
-            break
-        fi
-    done
-    
-    echo "Deploying the K/V store (this may take a couple of minutes)"
-    helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
-    helm install --name etcd incubator/etcd --set StorageClass=rook-block \
-        --set Storage=128Mi --tiller-namespace=default
-    while true;
-    do
-        echo "Waiting for K/V store to be ready"
-        sleep 15s
-        if kubectl get pods --selector component=etcd-etcd | grep Running; then
-            break
-        fi
-    done
-    
     echo "Deploying the relational database"
-    kubectl apply -f manifests/postgresql.yaml
+    helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/
+    helm install --tiller-namespace=default --name db incubator/patroni \
+        --set Replicas=2 --set Memory=256Mi
+    sleep 30s
+
+    # patroni helm chart doesn't allow you to configure RBAC
+    kubectl set serviceaccount statefulset db-patroni patroni
+    # kick those two so the service account is taken into account
+    kubectl delete pod -l component=db-patroni
+
     while true;
     do
         echo "Waiting for database cluster to be ready"
         sleep 5s
-        if kubectl get pods --selector app=stolon-keeper | grep Running; then
-            sleep 3s
-            # creating a cluster of postgresql instances
-            local stolon_cluster_config='{"additionalWalSenders": null, "initMode": "new", "pgParameters": {"datestyle": "iso, mdy", "default_text_search_config": "pg_catalog.english", "dynamic_shared_memory_type": "posix", "lc_messages": "en_US.utf8", "lc_monetary": "en_US.utf8", "lc_numeric": "en_US.utf8", "lc_time": "en_US.utf8", "log_timezone": "UTC", "max_connections": "100", "shared_buffers": "128MB", "timezone": "UTC"}, "pgHBA": null}'
-            kubectl exec -it stolon-keeper-0 -- /usr/local/bin/stolonctl --cluster-name=kube-stolon --store-backend=etcd --store-endpoints=http://etcd-etcd:2379 init --yes "${stolon_cluster_config}"
+        if kubectl exec db-patroni-0 ps aux | grep streaming; then
+            sleep 5s
             break
         fi
     done
@@ -149,6 +83,9 @@ function boot () {
     echo "Uploading TLS certs for frontend application"
     kubectl create secret tls frontend-tls --key apps/frontend/tls.key \
         --cert apps/frontend/tls.crt
+
+    kubectl create secret generic frontend-secret \
+        --from-literal=dbpassword=notsosecret
 
     init_db
 

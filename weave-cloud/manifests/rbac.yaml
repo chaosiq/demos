@@ -63,3 +63,24 @@ subjects:
   - kind: ServiceAccount
     name: tiller
     namespace: default
+
+## patroni needs some access as well
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: patroni
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: patroni-clusterrolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: patroni
+    namespace: default
