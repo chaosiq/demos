@@ -163,6 +163,7 @@ function boot () {
     done
 
     echo
+    echo
     echo "Done! The ip of your cluster is $(minikube ip)"
     echo "Please, add that address to your /etc/hosts file so you can resolve it locally:"
     echo
@@ -185,21 +186,27 @@ function main () {
 
     while test -n "$1"; do
         case "$1" in
-        -h|--help) usage;;
+        -h|--help)
+            usage
+            ;;
         -d|--vm-driver)
             vm_driver=$2
-            shift 2;;
+            shift 2
+            ;;
         -c|--no-create-cluster)
             start_cluster=false
             shift 1
-        ;;
+            ;;
         -n|--no-apply-namespaces)
             apply_ns=false
-            shift 1;;
+            shift 1
+            ;;
         -w|--no-deploy-helm)
             deploy_helm=false
-            shift 1;;
-        *) break;;
+            shift 1
+            ;;
+        *) break
+            ;;
         esac
     done
     shift $((OPTIND -1))
