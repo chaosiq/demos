@@ -60,7 +60,7 @@ You will also need to install the following programs locally:
 
 [kubectl]: https://kubernetes.io/docs/tasks/tools/install-kubectl/
 [helm]: https://github.com/kubernetes/helm
-[psql]: https://www.postgresql.org/download/
+[postgresql]: https://www.postgresql.org/download/
 
 ### Weave Cloud Account
 
