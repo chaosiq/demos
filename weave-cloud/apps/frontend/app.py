@@ -52,7 +52,7 @@ def create_app():
     * setup Open Tracing support
     """
     cherrypy.log("Creating frontend application")
-
+   
     pg_addr = os.environ.get("PG_ADDR", "localhost:5432")
     pg_user = os.environ.get("PG_USERNAME", "postgres")
     pg_pwd = os.environ.get("PG_PASSWORD", "password1")
@@ -70,7 +70,7 @@ def create_app():
             db.create_all()
         except sqlalchemy.exc.OperationalError:
             cherrypy.log("Failed to connect to database", traceback=False)
-            
+       
     # expose metrics of ourselves to prometheus
     metrics = PrometheusMetrics(app)
     metrics.info(
@@ -81,14 +81,17 @@ def create_app():
     admin.add_view(ModelView(Star, db.session))
 
     # trace requests accross our system with Open Tracing
+    jeager_logger = logging.getLogger('jaeger_tracing')
+    jeager_logger.setLevel(logging.DEBUG)
     tracer = FlaskTracer(
         Config(
-            config={},
+            config={
+            },
             service_name="frontend"
         ).initialize_tracer(),
         True, app, ["url_rule"]
     )
-
+  
     # this will log requests to stdout
     wsgiapp = WSGILogger(
         app.wsgi_app, [logging.StreamHandler()], ApacheFormatter(),
