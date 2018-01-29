@@ -106,6 +106,7 @@ spec:
         volume.alpha.kubernetes.io/storage-class: rook-block
     spec:
       accessModes: ["ReadWriteOnce"]
+      storageClassName: rook-block
       resources:
         requests:
           storage: 256Mi
