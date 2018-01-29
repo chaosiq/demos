@@ -113,6 +113,7 @@ function boot () {
     done
     
     echo "Deploying the K/V store (this may take a couple of minutes)"
+    helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
     helm install --name etcd incubator/etcd --set StorageClass=rook-block \
         --set Storage=128Mi --tiller-namespace=default
     while true;

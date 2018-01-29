@@ -51,6 +51,17 @@ run on any Kubernetes environment.
 However, expect to have at least 4Gb of RAM you can dedicated to the demo
 to run and 2 VCPU. More would be better.
 
+You will also need to install the following programs locally:
+
+* [kubectl][kubectl]
+* [helm][helm]
+* [psql][postgresql]: the PostgreSQL client (you likely need to install the
+  whole package sadly)
+
+[kubectl]: https://kubernetes.io/docs/tasks/tools/install-kubectl/
+[helm]: https://github.com/kubernetes/helm
+[psql]: https://www.postgresql.org/download/
+
 ### Weave Cloud Account
 
 This demo expects you own a [Weave Cloud][weavecloud] account. Please make sure
