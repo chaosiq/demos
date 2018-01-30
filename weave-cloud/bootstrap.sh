@@ -115,6 +115,8 @@ function boot () {
     echo
     echo "Then you can point your browser at: https://app.cosmos.foo/"
     echo
+    echo "You can view traces at: $(minikube service jaeger-query --url)"
+    echo
 }
 
 function usage() { 
