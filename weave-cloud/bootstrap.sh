@@ -111,11 +111,11 @@ function boot () {
     echo "Done! The ip of your cluster is $(minikube ip)"
     echo "Please, add that address to your /etc/hosts file so you can resolve it locally:"
     echo
-    echo 'echo "$(minikube ip) app.cosmos.foo" | sudo tee -a /etc/hosts'
+    echo "./expose-domain.sh"
     echo
     echo "Then you can point your browser at: https://app.cosmos.foo/"
     echo
-    echo "You can view traces at: $(minikube service jaeger-query --url)"
+    echo "You can also view traces at: $(minikube service jaeger-query --url)"
     echo
 }
 
