@@ -13,4 +13,4 @@ RUN apk update && \
 
 ADD . .
 EXPOSE 8080
-ENTRYPOINT ["python3", "app.py"]
+ENTRYPOINT ["python3", "serve.py"]
