@@ -36,6 +36,11 @@ function install_helm () {
     done
 }
 
+function deploy_jeager_opentracing () {
+    echo "Deploying Jeager open tracer"
+    kubectl create -f https://raw.githubusercontent.com/jaegertracing/jaeger-kubernetes/master/all-in-one/jaeger-all-in-one-template.yml
+}
+
 function init_db () {
     local superuserpwd=$(kubectl get secret --namespace default db-patroni -o jsonpath="{.data.password-superuser}" | base64 --decode)
     local user="frontend"
@@ -88,6 +93,7 @@ function boot () {
         --from-literal=dbpassword=notsosecret
 
     init_db
+    deploy_jeager_opentracing
 
     echo "Deploying the application"
     kubectl create -f manifests/frontend.yaml
