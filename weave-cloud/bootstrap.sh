@@ -42,42 +42,41 @@ function deploy_jeager_opentracing () {
 }
 
 function init_db () {
-    local superuserpwd=$(kubectl get secret --namespace default db-patroni -o jsonpath="{.data.password-superuser}" | base64 --decode)
-    local user="frontend"
-    local passwd="notsosecret"
-    local dbname="cosmos"
-
-    # hackish, but we must locate the leader for write access
-    local podname="db-patroni-0"
-    if ! kubectl logs $podname | grep "i am the leader"; then
-        podname="db-patroni-1"
-    fi
-
-    kubectl cp apps/frontend/db.sql $podname:/tmp/db.sql
-    kubectl exec $podname -- bash -c "PGPASSWORD=$superuserpwd psql -U postgres -d postgres -a -f /tmp/db.sql"
-}
-
-function boot () {
-    echo "Deploying the relational database"
-    helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/
-    helm install --tiller-namespace=default --name db incubator/patroni \
-        --set Replicas=2 --set Memory=256Mi
-    sleep 30s
-
-    # patroni helm chart doesn't allow you to configure RBAC
-    kubectl set serviceaccount statefulset db-patroni patroni
-    # kick those two so the service account is taken into account
-    kubectl delete pod -l component=db-patroni
-
+    echo "Creating database cluster"
+    kubectl create -f manifests/postgresql.yaml
     while true;
     do
-        echo "Waiting for database cluster to be ready"
+        echo "Waiting for database operator to be ready"
         sleep 5s
-        if kubectl exec db-patroni-0 ps aux | grep streaming; then
-            sleep 5s
+        if kubectl get crd postgresqls.acid.zalan.do; then
+            sleep 10s
             break
         fi
     done
+
+    kubectl create -f manifests/database.yaml
+    while true;
+    do
+        echo "Waiting for database to be initialized"
+        sleep 5s
+        if kubectl logs -l name=postgres-operator | grep "cluster has been created"; then
+            break
+        fi
+    done
+
+    local user="frontend"
+    local password=$(kubectl get secret frontend.frontend-db.credentials -o 'jsonpath={.data.password}' | base64 -d)
+    local dbname="cosmos"
+    local podname=$(kubectl get pod -l spilo-role=master -o jsonpath='{.items[0].metadata.name}')
+
+    kubectl cp apps/frontend/db.sql $podname:/tmp/db.sql
+    kubectl exec $podname -- bash -c "PGPASSWORD=$password psql -U $user -d $dbname -a -f /tmp/db.sql"
+    sleep 3s
+    echo "Database created and populated"
+}
+
+function boot () {
+    init_db
 
     echo "Deploying nginx ingress"
     helm install --tiller-namespace=default \
@@ -89,10 +88,6 @@ function boot () {
     kubectl create secret tls frontend-tls --key apps/frontend/tls.key \
         --cert apps/frontend/tls.crt
 
-    kubectl create secret generic frontend-secret \
-        --from-literal=dbpassword=notsosecret
-
-    init_db
     deploy_jeager_opentracing
 
     echo "Deploying the application"

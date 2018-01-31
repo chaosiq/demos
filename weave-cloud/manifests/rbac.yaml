@@ -72,6 +72,12 @@ metadata:
   name: patroni
   namespace: default
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: operator
+  namespace: default
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -83,4 +89,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: patroni
+    namespace: default
+  - kind: ServiceAccount
+    name: operator
     namespace: default

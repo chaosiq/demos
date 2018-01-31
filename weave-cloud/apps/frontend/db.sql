@@ -1,10 +1,3 @@
-CREATE DATABASE cosmos WITH ENCODING 'UTF8';
-CREATE USER frontend;
-GRANT all privileges ON DATABASE cosmos TO frontend;
-ALTER USER frontend WITH PASSWORD 'notsosecret';
-
-\c cosmos
-
 CREATE SEQUENCE star_id_seq START 10000;
 
 CREATE TABLE star

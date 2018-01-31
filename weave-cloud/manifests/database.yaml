@@ -1,0 +1,24 @@
+---
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: frontend-db
+spec:
+  teamId: "frontend"
+  volume:
+    size: 1Gi
+  numberOfInstances: 2
+  users:
+    frontend:
+    - superuser
+    - createdb
+  #databases: name->owner
+  databases:
+    cosmos: frontend
+  postgresql:
+    version: "10"
+  patroni:
+    initdb:
+      encoding: "UTF8"
+      locale: "en_US.UTF-8"
+      data-checksums: "true"

@@ -14,11 +14,10 @@ from prometheus_flask_exporter import PrometheusMetrics
 from requestlogger import ApacheFormatter, WSGILogger
 import sqlalchemy
 
-from app import blueprint
+from app import frontend_app
 from model import db, Star
 
 __version__ = "0.1.0"
-webapp = Flask(__name__)
 
 
 def setup_db():
@@ -31,14 +30,14 @@ def setup_db():
     db_conn = "postgresql://{u}:{p}@{a}/cosmos".format(
         u=pg_user, p=pg_pwd, a=pg_addr
     )
-    webapp.config["SQLALCHEMY_DATABASE_URI"] = db_conn
-    webapp.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    webapp.config["SECRET_KEY"] = "kaboom"
+    frontend_app.config["SQLALCHEMY_DATABASE_URI"] = db_conn
+    frontend_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    frontend_app.config["SECRET_KEY"] = "kaboom"
 
     # intialize our db and create the tables if they don't exist yet
-    with webapp.app_context():
+    with frontend_app.app_context():
         try:
-            db.init_app(webapp)
+            db.init_app(frontend_app)
             db.create_all()
         except sqlalchemy.exc.OperationalError:
             cherrypy.log("Failed to connect to database", traceback=False)
@@ -49,7 +48,7 @@ def setup_metrics():
     Setup Prometheus endpoint for monitoring purpose.
     """
     # expose metrics of ourselves to prometheus
-    metrics = PrometheusMetrics(webapp)
+    metrics = PrometheusMetrics(frontend_app)
     metrics.info(
         'blueprint_info', 'application info', version=__version__,
         app="frontend")
@@ -61,7 +60,7 @@ def setup_admin_dashboard():
     database.
     """
     # a simple admin dashboard for the application
-    admin = Admin(webapp, name='cosmos', template_mode='bootstrap3')
+    admin = Admin(frontend_app, name='cosmos', template_mode='bootstrap3')
     admin.add_view(ModelView(Star, db.session))
 
 
@@ -70,9 +69,8 @@ def serve_blueprint():
     Mount the application so it can served by the HTTP server.
     """
     # this will log requests to stdout
-    webapp.register_blueprint(blueprint)
     wsgiapp = WSGILogger(
-        webapp.wsgi_app, [logging.StreamHandler()], ApacheFormatter(),
+        frontend_app.wsgi_app, [logging.StreamHandler()], ApacheFormatter(),
         propagate=False)
     cherrypy.tree.graft(wsgiapp, "/")
     return wsgiapp

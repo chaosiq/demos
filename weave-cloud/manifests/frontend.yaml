@@ -50,6 +50,7 @@ spec:
       name: frontend-app
       labels:
         name: frontend-app
+        app: frontend-app
         service: frontend-service
     spec:
       containers:
@@ -75,14 +76,14 @@ spec:
         image: chaosiq/demos-weave-cloud-frontend-app
         env:
         - name: PG_ADDR
-          value: db-patroni.default.svc.cluster.local:5432
+          value: frontend-db.default.svc.cluster.local:5432
         - name: PG_USERNAME
           value: frontend
         - name: PG_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: frontend-secret
-              key: dbpassword
+              name: frontend.frontend-db.credentials
+              key: password
         livenessProbe:
           httpGet:
             path: "/live"

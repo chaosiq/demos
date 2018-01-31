@@ -1,11 +1,12 @@
 {
     "version": "1.0.0",
-    "title": "Terminate a database instance should not prevent application from running",
-    "description": "As we are relying on Stolon to provide HA PostgreSQL, we expect that the application should run fine even when one PostgreSQL instance goes away",
+    "title": "Terminate the database master should not prevent application from running",
+    "description": "As we are relying on Patroni to provide HA PostgreSQL, we expect that the application should run fine even when the PostgreSQL master goes away",
     "tags": [
         "kubernetes",
         "postgresql",
-        "cloudnative"
+        "cloudnative",
+        "database"
     ],
     "steady-state-hypothesis": {
         "title": "Services are all available and healthy",
@@ -39,20 +40,73 @@
     "method": [
         {
             "type": "action",
-            "name": "terminate-db-pod",
+            "name": "terminate-db-master",
             "provider": {
                 "type": "python",
                 "module": "chaosk8s.pod.actions",
                 "func": "terminate_pods",
                 "arguments": {
-                    "label_selector": "component=db-patroni",
-                    "name_pattern": "db-patroni-[0-9]$",
+                    "label_selector": "spilo-role=master",
+                    "name_pattern": "frontend-db-[0-9]$",
                     "rand": true,
                     "ns": "default"
                 }
             },
             "pauses": {
-                "after": 5
+                "after": 2
+            }
+        },
+        {
+            "type": "probe",
+            "ref": "application-must-respond"
+        },
+        {
+            "type": "probe",
+            "name": "fetch-application-logs",
+            "provider": {
+                "type": "python",
+                "module": "chaosk8s.pod.probes",
+                "func": "read_pod_logs",
+                "arguments": {
+                    "label_selector": "app=frontend-app",
+                    "container_name": "frontend-app",
+                    "last": "20s",
+                    "ns": "default"
+                }
+            },
+            "pauses": {
+                "before": 5
+            }
+        },
+        {
+            "type": "probe",
+            "name": "fetch-db-logs",
+            "provider": {
+                "type": "python",
+                "module": "chaosk8s.pod.probes",
+                "func": "read_pod_logs",
+                "arguments": {
+                    "label_selector": "application=spilo",
+                    "last": "30s",
+                    "ns": "default"
+                }
+            },
+            "pauses": {
+                "before": 20
+            }
+        },
+        {
+            "type": "probe",
+            "name": "fetch-patroni-operator-logs",
+            "provider": {
+                "type": "python",
+                "module": "chaosk8s.pod.probes",
+                "func": "read_pod_logs",
+                "arguments": {
+                    "label_selector": "name=postgres-operator",
+                    "last": "20s",
+                    "ns": "default"
+                }
             }
         }
     ],

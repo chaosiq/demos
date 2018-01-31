@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import cherrypy
 from cherrypy.process.wspbus import states
-from flask import Blueprint, render_template, request
+from flask import Flask, render_template, request
 from flask_opentracing import FlaskTracer
 from jaeger_client import Config
 import opentracing
@@ -9,10 +9,10 @@ import opentracing
 from model import Star
 
 
-__all__ = ["blueprint"]
+__all__ = ["frontend_app"]
 
-blueprint = Blueprint(
-    "frontend", __name__, template_folder='templates', static_folder='static')
+frontend_app = Flask(
+    __name__, template_folder='templates', static_folder='static')
 
 
 def create_tracer():
@@ -24,26 +24,26 @@ def create_tracer():
     return Config(config={}, service_name="frontend").initialize_tracer()
 
 
-tracer = FlaskTracer(create_tracer, False, blueprint, ["url_rule"])
+tracer = FlaskTracer(create_tracer)
 
 
-@blueprint.route('/')
-@tracer.trace()
+@frontend_app.route('/')
+@tracer.trace("url_rule")
 def index():
     stars = Star.query.filter().all()
     return render_template('index.html', stars=stars)
 
 
-@blueprint.route('/health')
-@tracer.trace()
+@frontend_app.route('/health')
+@tracer.trace("url_rule")
 def health():
     if cherrypy.engine.state != states.STARTED:
         raise cherrypy.HTTPError(503)
     return "OK"
 
 
-@blueprint.route('/live')
-@tracer.trace()
+@frontend_app.route('/live')
+@tracer.trace("url_rule")
 def live():
     if cherrypy.engine.state != states.STARTED:
         raise cherrypy.HTTPError(503)
