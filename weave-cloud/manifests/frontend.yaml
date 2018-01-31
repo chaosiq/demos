@@ -72,7 +72,7 @@ spec:
           containerPort: 8080
           protocol: TCP
         imagePullPolicy: Always
-        image: chaosiq/demos-frontend-app
+        image: chaosiq/demos-frontend-app:0.1.0
         env:
         - name: PG_ADDR
           value: frontend-db.default.svc.cluster.local:5432
