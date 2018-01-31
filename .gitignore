@@ -110,7 +110,7 @@ docs/site/
 junit-test-results.xml
 
 # chaostoolkit
-report.pdf
+report.*
 discovery.json
 experiment.log
 chaos-report.json
