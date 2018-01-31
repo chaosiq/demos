@@ -10,3 +10,8 @@ env:
 
 script:
 - bash ci.bash
+
+branches:
+  only:
+  - master
+  - "/^\\d+\\.\\d+\\.\\d+$/"
