@@ -135,6 +135,3 @@ directory. To run one, use the [chaostoolkit][chaostoolkit] as follows:
 ```console
 $ chaos run experiments/terminate-db-instance.json
 ```
-
-
-
