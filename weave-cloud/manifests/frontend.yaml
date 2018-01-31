@@ -20,7 +20,7 @@ metadata:
   name: frontend-ingress
   namespace: default
   annotations:
-    flux.weave.works/tag.frontend-app: glob:target=frontend
+    flux.weave.works/automated: "true"
 spec:
   tls:
     - hosts:
