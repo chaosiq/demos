@@ -1,0 +1,12 @@
+language: python
+sudo: required
+services:
+- docker
+
+env:
+  global:
+  - DOCKER_USER_NAME: chaosiq
+  - secure: "Tf7C5uY9dJPd8+Mc+IHDbZ/wUmqMth+UJ3PcGiK5QX2YxtG7uOmRClKDZRmKsXhfmnJ2HRSgwtrxJ+a3LM4GWcOm1ITNRrEbEoNpBrX64YL1LRxsQfK+B3S1rjGPe8kbAS/mHs+P8YLcoFuoB/3UDeDGXm9tIDLbY1YMhxLlw9GOu8WQZJ8pjKrLWhX6ZI7Ukfuk9Og5r2rZmf8msH1l4AFmbtTvBFzhpPIQQ7pslpwEaYfGrPeHWgFl+JtpDnVSFebUx5xPdAPemD0nRn3enwoD6DtsHSClA3WK+wXox+q1kbfIUg8xemQi/nnrbgfFGJ0UVLw+9oktqZTo5pYHwoDOkOX5kL7KckWrW4poym9yLgfGIKk8myQSjoqj2r7l41Af9tf2KioJZCd9/4Ty4tD2if6lwmRS8QSo/WrkpIuvgmS8tKfG0igiZXp+uCveQkGDbWtvUEnfRmwZwf388gL/O86a9CfH4/29hX4NjlriRZ2Psb2Kmjd1t+hIxfniQEkBPCF1dyRs7um+sVzeLxWAb0hegILGWcRSKrgC/Yw+lRiFfUWx1oSYuMYbX0uwWds38id+fah6Cr0lQiB6Ts1omTuqb1GEQe6B8SwrW2K1skU6XJW7Mk/ZJ3HC+xU5OVZ5cgoEXjHAJh9+ldlqjtyCtSvhCTSImuw5dI+fZWk="
+
+script:
+- bash ci.bash
