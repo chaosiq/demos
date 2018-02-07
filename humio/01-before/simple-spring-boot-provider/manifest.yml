@@ -1,0 +1,5 @@
+---
+applications:
+  - name: simple-spring-boot-provider
+    buildpack: java_buildpack
+    path: target/simple-microservice-provider-0.1.0-SNAPSHOT.jar

@@ -1,0 +1,52 @@
+{
+    "version": "1.0.0",
+    "title": "System is resilient to provider's failures",
+    "description": "Can our consumer survive gracefully a provider's failure?",
+    "tags": [
+        "service",
+        "cloudfoundry",
+        "spring"
+    ],
+    "configuration": {
+        "cf_api_url": "https://api.local.pcfdev.io",
+        "cf_verify_ssl": false
+    },
+    "secrets": {
+        "cloudfoundry": {
+            "cf_username": "user",
+            "cf_password": "pass"
+        }
+    },
+    "steady-state-hypothesis": {
+        "title": "System is healthy",
+        "probes": [
+            {
+                "type": "probe",
+                "name": "consumer-service-must-still-respond",
+                "tolerance": 200,
+                "provider": {
+                    "type": "http",
+                    "url": "http://simple-boot-feign-direct-microservice-consumer.local.pcfdev.io/invokeConsumedService"
+                }
+            }
+        ]
+    },
+    "method": [
+        {
+            "type": "action",
+            "name": "delete_app",
+            "provider": {
+                "type": "python",
+                "module": "chaoscf.actions",
+                "func": "delete_app",
+                "secrets": ["cloudfoundry"],
+                "arguments": {
+                    "app_name": "simple-spring-boot-provider",
+                    "org_name": "pcfdev-org",
+                    "space_name": "pcfdev-space"
+                }
+            }
+        }
+    ],
+    "rollbacks": []
+}

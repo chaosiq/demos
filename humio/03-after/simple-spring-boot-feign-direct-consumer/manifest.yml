@@ -1,0 +1,5 @@
+---
+applications:
+  - name: simple-boot-feign-direct-microservice-consumer
+    buildpack: java_buildpack
+    path: target/simple-boot-feign-direct-microservice-consumer-0.1.0-SNAPSHOT.jar

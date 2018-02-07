@@ -114,4 +114,10 @@ report.*
 discovery.json
 experiment.log
 chaos-report.json
+journal.json
+.classpath
+.mvn
+.project
+.settings
+
 
