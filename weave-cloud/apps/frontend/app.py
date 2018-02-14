@@ -3,7 +3,7 @@ import contextlib
 
 import cherrypy
 from cherrypy.process.wspbus import states
-from flask import Flask, render_template, request
+from flask import abort, Flask, render_template, request
 from flask_opentracing import FlaskTracer
 from jaeger_client import Config, Span
 import opentracing
@@ -54,7 +54,7 @@ def index():
 @tracer.trace("url_rule")
 def health():
     if cherrypy.engine.state != states.STARTED:
-        raise cherrypy.HTTPError(503)
+        return abort(503)
     return "OK"
 
 
@@ -62,5 +62,5 @@ def health():
 @tracer.trace("url_rule")
 def live():
     if cherrypy.engine.state != states.STARTED:
-        raise cherrypy.HTTPError(503)
+        return abort(503)
     return "OK"
