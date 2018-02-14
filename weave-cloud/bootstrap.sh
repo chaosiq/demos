@@ -87,7 +87,7 @@ function boot () {
     deploy_jeager_opentracing
 
     echo "Deploying the application"
-    kubectl create -f manifests/deployment/frontend.yaml -f manifests/service/frontend.yaml
+    kubectl create -f manifests/deployment/frontend.yaml -f manifests/service/frontend.yaml -f manifests/ingress/frontend.yaml
     while true;
     do
         echo "Waiting for the application to be available"
