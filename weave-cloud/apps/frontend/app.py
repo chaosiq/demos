@@ -5,8 +5,9 @@ from flask import Flask, render_template, request
 from flask_opentracing import FlaskTracer
 from jaeger_client import Config
 import opentracing
+from sqlalchemy import exc
 
-from model import Star
+from model import db, Star
 
 
 __all__ = ["frontend_app"]
@@ -30,7 +31,17 @@ tracer = FlaskTracer(create_tracer)
 @frontend_app.route('/')
 @tracer.trace("url_rule")
 def index():
-    stars = Star.query.filter().all()
+    try:
+        stars = Star.query.filter().all()
+    except exc.OperationalError:
+        cherrypy.log("Connection to database lost, trying a new connection")
+
+        # invalidate current pending query
+        db.session.rollback()
+
+        # will re-create a new connection pool
+        stars = Star.query.filter().all()
+
     return render_template('index.html', stars=stars)
 
 
