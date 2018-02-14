@@ -11,10 +11,6 @@ function init_cluster () {
 }
 
 function update_namespaces () {
-    echo "Creating namespaces"
-    kubectl apply -f manifests/ns.yaml
-    sleep 2s
-    
     echo "Creating RBAC Policies"
     kubectl apply -f manifests/rbac.yaml
     sleep 2s
