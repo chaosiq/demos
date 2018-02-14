@@ -1,0 +1,45 @@
+# some of the kube components break wne RBAC is enabled in minikube, this
+# should provide the appropriate permissions for those to return to normal
+# see https://github.com/kubernetes/minikube/issues/1734#issuecomment-323443032
+---
+  kind: ClusterRole
+  apiVersion: rbac.authorization.k8s.io/v1
+  metadata:
+    name: cluster-writer
+  rules:
+    - apiGroups: ["*"]
+      resources: ["*"]
+      verbs: ["*"]
+    - nonResourceURLs: ["*"]
+      verbs: ["*"]
+  ---    
+  kind: ClusterRole
+  apiVersion: rbac.authorization.k8s.io/v1
+  metadata:
+    name: cluster-reader
+  rules:
+    - apiGroups: ["*"]
+      resources: ["*"]
+      verbs: ["get", "list", "watch"]
+    - nonResourceURLs: ["*"]
+      verbs: ["*"]
+  ---
+  kind: ClusterRoleBinding
+  apiVersion: rbac.authorization.k8s.io/v1
+  metadata:
+    name: cluster-write
+  subjects:
+    - kind: User
+      name: admin
+    - kind: User
+      name: kubelet
+    - kind: ServiceAccount
+      name: default
+      namespace: kube-system
+    - kind: User
+      name: kube-proxy
+  roleRef:
+    kind: ClusterRole
+    name: cluster-writer
+    apiGroup: rbac.authorization.k8s.io
+  

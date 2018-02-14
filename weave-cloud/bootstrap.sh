@@ -12,12 +12,12 @@ function init_cluster () {
 
 function update_namespaces () {
     echo "Creating RBAC Policies"
-    kubectl apply -f manifests/rbac.yaml
+    kubectl apply -f manifests/rbac
     sleep 2s
 }
 
 function install_helm () {
-    echo "Setting up helm"
+    echo "Setting up helm"  
     helm init --service-account tiller --tiller-namespace=default
     # unfortunately, helm init doesn't actually wait long enough
     while true;
@@ -39,8 +39,7 @@ function deploy_jeager_opentracing () {
 
 function init_db () {
     echo "Creating database cluster"
-    kubectl create -f manifests/postgresql.yaml
-    while true;
+    kubectl create -f manifests/configmap -f manifest/deployment/patroni.yaml
     do
         echo "Waiting for database operator to be ready"
         sleep 5s
@@ -87,7 +86,7 @@ function boot () {
     deploy_jeager_opentracing
 
     echo "Deploying the application"
-    kubectl create -f manifests/frontend.yaml
+    kubectl create -f manifests/deployment/frontend.yaml -f manifests/service/frontend.yaml
     while true;
     do
         echo "Waiting for the application to be available"

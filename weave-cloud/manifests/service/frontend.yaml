@@ -1,0 +1,36 @@
+---
+  kind: Service
+  apiVersion: v1
+  metadata:
+    name: frontend-service
+    labels:
+      service: frontend-service
+  spec:
+    type: LoadBalancer
+    ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+    selector:
+      service: frontend-service
+  ---
+  apiVersion: extensions/v1beta1
+  kind: Ingress
+  metadata:
+    name: frontend-ingress
+    namespace: default
+    annotations:
+      flux.weave.works/automated: "true"
+  spec:
+    tls:
+      - hosts:
+          - "app.cosmos.foo"
+        secretName: frontend-tls
+    rules:
+    - host: app.cosmos.foo
+      http:
+        paths:
+        - path: /
+          backend:
+            serviceName: frontend-service
+            servicePort: 8080
