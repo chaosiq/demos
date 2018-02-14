@@ -1,0 +1,1 @@
+{"jobID":"5ac6f9de-a3a4-ceac-6c11-25d2853612e0","spec":{"type":"policy","cause":{"Message":"","User":"sylvain \u003csylvain@chaosiq.io\u003e"},"spec":{"default:deployment/frontend-app":{"add":null,"remove":{"automated":"true"}}}},"result":null}
