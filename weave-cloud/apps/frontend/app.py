@@ -30,7 +30,7 @@ tracer = FlaskTracer(create_tracer)
 
 
 @contextlib.contextmanager
-def new_span(name: str, parent_span: Span=None) -> :
+def new_span(name: str, parent_span: Span=None):
     """
     Create a new nested span.
     """
