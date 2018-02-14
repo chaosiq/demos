@@ -2,8 +2,6 @@
 kind: Deployment
 apiVersion: apps/v1beta2
 metadata:
-  annotations:
-    flux.weave.works/automated: "true"
   name: frontend-app
 spec:
   replicas: 1
