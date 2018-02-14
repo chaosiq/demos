@@ -39,7 +39,8 @@ function deploy_jeager_opentracing () {
 
 function init_db () {
     echo "Creating database cluster"
-    kubectl create -f manifests/configmap -f manifest/deployment/patroni.yaml
+    kubectl create -f manifests/configmap -f manifests/deployment/patroni.yaml
+    while true;
     do
         echo "Waiting for database operator to be ready"
         sleep 5s
