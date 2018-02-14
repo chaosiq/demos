@@ -23,7 +23,16 @@ def create_tracer():
     race conditions.
     """
     cherrypy.log("Creating tracer")
-    return Config(config={}, service_name="frontend").initialize_tracer()
+    return Config(
+        config={
+            'sampler': {
+                'type': 'const',
+                'param': 1,
+            },
+            'logging': True
+        },
+        service_name="frontend"
+    ).initialize_tracer()
 
 
 tracer = FlaskTracer(create_tracer)
