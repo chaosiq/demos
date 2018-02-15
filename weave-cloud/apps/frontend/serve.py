@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
+import sys
 
 import cherrypy
 import click
@@ -76,6 +77,19 @@ def serve_blueprint():
     return wsgiapp
 
 
+def setup_logger():
+    """
+    Enable logger for various libraries
+    """
+    logger = logging.getLogger('jaeger_tracing')
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(logging.DEBUG)
+    fmt = '[%(asctime)s] %(levelname)s %(module)s: %(message)s'
+    fmt = logging.Formatter(fmt, datefmt='%d/%b/%Y:%H:%M:%S')
+    handler.setFormatter(fmt)
+    logger.addHandler(handler)
+
+
 def create_app():
     """
     Create the application and its dependencies.
@@ -87,6 +101,7 @@ def create_app():
     """
     cherrypy.log("Creating frontend application")
     
+    setup_logger()
     setup_db()
     setup_metrics()
     setup_admin_dashboard()

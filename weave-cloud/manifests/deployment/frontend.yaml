@@ -1,43 +1,9 @@
 ---
-kind: Service
-apiVersion: v1
-metadata:
-  name: frontend-service
-  labels:
-    service: frontend-service
-spec:
-  type: LoadBalancer
-  ports:
-  - protocol: TCP
-    port: 8080
-    targetPort: 8080
-  selector:
-    service: frontend-service
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: frontend-ingress
-  namespace: default
-  annotations:
-    flux.weave.works/automated: "true"
-spec:
-  tls:
-    - hosts:
-        - "app.cosmos.foo"
-      secretName: frontend-tls
-  rules:
-  - host: app.cosmos.foo
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: frontend-service
-          servicePort: 8080
----
 kind: Deployment
 apiVersion: apps/v1beta2
 metadata:
+  annotations:
+    flux.weave.works/automated: "true"
   name: frontend-app
 spec:
   replicas: 1
@@ -53,7 +19,7 @@ spec:
         service: frontend-service
     spec:
       containers:
-      - image: jaegertracing/jaeger-agent
+      - image: jaegertracing/jaeger-agent:1
         name: jaeger-agent
         ports:
         - containerPort: 5775
@@ -72,7 +38,7 @@ spec:
           containerPort: 8080
           protocol: TCP
         imagePullPolicy: Always
-        image: chaosiq/demos-frontend-app:0.1.0
+        image: chaosiq/demos-frontend-app:0.6.0
         env:
         - name: PG_ADDR
           value: frontend-db.default.svc.cluster.local:5432

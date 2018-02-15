@@ -1,10 +1,10 @@
-diff --git a/weave-cloud/apps/frontend/app.py b/weave-cloud/apps/frontend/app.py
-index 26a8ae3..fa2912a 100644
---- a/weave-cloud/apps/frontend/app.py
-+++ b/weave-cloud/apps/frontend/app.py
-@@ -5,8 +5,9 @@ from flask import Flask, render_template, request
+diff --git weave-cloud/apps/frontend/app.py weave-cloud/apps/frontend/app.py
+index dfecaf3..71f2d9a 100644
+--- weave-cloud/apps/frontend/app.py
++++ weave-cloud/apps/frontend/app.py
+@@ -7,8 +7,9 @@ from flask import abort, Flask, render_template, request
  from flask_opentracing import FlaskTracer
- from jaeger_client import Config
+ from jaeger_client import Config, Span
  import opentracing
 +from sqlalchemy import exc
  
@@ -13,33 +13,35 @@ index 26a8ae3..fa2912a 100644
  
  
  __all__ = ["frontend_app"]
-@@ -31,6 +32,15 @@ tracer = FlaskTracer(create_tracer)
+@@ -55,7 +56,17 @@ def new_span(name: str, parent_span: Span=None):
  @tracer.trace("url_rule")
  def index():
-     stars = Star.query.filter().all()
-+    except exc.OperationalError:
-+        cherrypy.log("Connection to database lost, trying a new connection")
+     with new_span("query_stars"):
+-        stars = Star.query.filter().all()
++        try:
++            stars = Star.query.filter().all()
++        except exc.OperationalError:
++            cherrypy.log("Connection to database lost, trying a new connection")
 +
-+        # invalidate current pending query
-+        db.session.rollback()
++            # invalidate current pending query
++            db.session.rollback()
 +
-+        # will re-create a new connection pool
-+        stars = Star.query.filter().all()
++            # will re-create a new connection pool
++            stars = Star.query.filter().all()
 +
      return render_template('index.html', stars=stars)
  
  
-diff --git a/weave-cloud/apps/frontend/model.py b/weave-cloud/apps/frontend/model.py
-index 668709f..c8787eb 100644
---- a/weave-cloud/apps/frontend/model.py
-+++ b/weave-cloud/apps/frontend/model.py
-@@ -1,9 +1,14 @@
+diff --git weave-cloud/apps/frontend/model.py weave-cloud/apps/frontend/model.py
+index 1570f76..febe79d 100644
+--- weave-cloud/apps/frontend/model.py
++++ weave-cloud/apps/frontend/model.py
+@@ -1,8 +1,13 @@
  # -*- coding: utf-8 -*-
 -from flask_sqlalchemy import SQLAlchemy
 +from flask_sqlalchemy import SQLAlchemy as SA
  
  __all__ = ["db", "Star"]
- 
  
 +class SQLAlchemy(SA):
 +    def apply_pool_defaults(self, app, options):
