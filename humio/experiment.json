@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
-    "title": "System is resilient to provider's failures",
-    "description": "Can our consumer survive gracefully a provider's failure?",
+    "title": "System is resilient to failure in routes to a provider",
+    "description": "Can our consumer survive gracefully a failure in the routes to a provider?",
     "tags": [
         "service",
         "cloudfoundry",
