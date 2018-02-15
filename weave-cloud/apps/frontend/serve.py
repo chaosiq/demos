@@ -78,9 +78,12 @@ def serve_blueprint():
 
 
 def setup_logger():
+    """
+    Enable logger for various libraries
+    """
     logger = logging.getLogger('jaeger_tracing')
     handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(logging.INFO)
+    handler.setLevel(logging.DEBUG)
     fmt = '[%(asctime)s] %(levelname)s %(module)s: %(message)s'
     fmt = logging.Formatter(fmt, datefmt='%d/%b/%Y:%H:%M:%S')
     handler.setFormatter(fmt)
