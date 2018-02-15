@@ -38,15 +38,14 @@
     },
     "method": [
         {
-            "name": "unmap_route_from_app",
+            "name": "delete_app",
             "provider": {
                 "arguments": {
                     "app_name": "simple-spring-boot-provider",
-                    "host_name": "simple-spring-boot-provider",
                     "org_name": "pcfdev-org",
                     "space_name": "pcfdev-space"
                 },
-                "func": "unmap_route_from_app",
+                "func": "delete_app",
                 "module": "chaoscf.actions",
                 "secrets": [
                     "cloudfoundry"
@@ -56,24 +55,5 @@
             "type": "action"
         }
     ],
-    "rollbacks": [
-        {
-            "name": "map_route_to_app",
-            "provider": {
-                "arguments": {
-                    "app_name": "simple-spring-boot-provider",
-                    "host_name": "simple-spring-boot-provider",
-                    "org_name": "pcfdev-org",
-                    "space_name": "pcfdev-space"
-                },
-                "func": "map_route_to_app",
-                "module": "chaoscf.actions",
-                "secrets": [
-                    "cloudfoundry"
-                ],
-                "type": "python"
-            },
-            "type": "action"
-        }
-    ]
+    "rollbacks": []
 }
