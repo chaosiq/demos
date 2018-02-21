@@ -30,64 +30,7 @@ index 71f2d9a..f34e60b 100644
 +        stars = Star.query.filter().all()
  
      return render_template('index.html', stars=stars)
- 
-diff --git weave-cloud/apps/frontend/db-lost-conn-failing.patch weave-cloud/apps/frontend/db-lost-conn-failing.patch
-index 748f19b..e69de29 100644
---- weave-cloud/apps/frontend/db-lost-conn-failing.patch
-+++ weave-cloud/apps/frontend/db-lost-conn-failing.patch
-@@ -1,52 +0,0 @@
--diff --git weave-cloud/apps/frontend/app.py weave-cloud/apps/frontend/app.py
--index 71f2d9a..f34e60b 100644
----- weave-cloud/apps/frontend/app.py
--+++ weave-cloud/apps/frontend/app.py
--@@ -7,9 +7,8 @@ from flask import abort, Flask, render_template, request
-- from flask_opentracing import FlaskTracer
-- from jaeger_client import Config, Span
-- import opentracing
---from sqlalchemy import exc
-- 
---from model import db, Star
--+from model import Star
-- 
-- 
-- __all__ = ["frontend_app"]
--@@ -56,16 +55,7 @@ def new_span(name: str, parent_span: Span=None):
-- @tracer.trace("url_rule")
-- def index():
--     with new_span("query_stars"):
---        try:
---            stars = Star.query.filter().all()
---        except exc.OperationalError:
---            cherrypy.log("Connection to database lost, trying a new connection")
---
---            # invalidate current pending query
---            db.session.rollback()
---
---            # will re-create a new connection pool
---            stars = Star.query.filter().all()
--+        stars = Star.query.filter().all()
-- 
--     return render_template('index.html', stars=stars)
-- 
--diff --git weave-cloud/apps/frontend/model.py weave-cloud/apps/frontend/model.py
--index febe79d..1570f76 100644
----- weave-cloud/apps/frontend/model.py
--+++ weave-cloud/apps/frontend/model.py
--@@ -1,13 +1,8 @@
-- # -*- coding: utf-8 -*-
---from flask_sqlalchemy import SQLAlchemy as SA
--+from flask_sqlalchemy import SQLAlchemy
-- 
-- __all__ = ["db", "Star"]
-- 
---class SQLAlchemy(SA):
---    def apply_pool_defaults(self, app, options):
---        SA.apply_pool_defaults(self, app, options)
---        options["pool_pre_ping"] = True
---
-- db = SQLAlchemy()
-- 
-- 
+
 diff --git weave-cloud/apps/frontend/model.py weave-cloud/apps/frontend/model.py
 index febe79d..1570f76 100644
 --- weave-cloud/apps/frontend/model.py
