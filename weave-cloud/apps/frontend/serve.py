@@ -18,7 +18,7 @@ import sqlalchemy
 from app import frontend_app
 from model import db, Star
 
-__version__ = "0.10.0"
+__version__ = "0.10.1"
 
 
 def setup_db():
