@@ -1,0 +1,54 @@
+{
+    "apiVersion" : "apps/v1beta1",
+    "kind" : "Deployment",
+    "metadata" : {
+      "name" : "my-provider-app"
+    },
+    "spec" : {
+      "replicas" : 1,
+      "selector" : {
+        "matchLabels" : {
+          "service" : "my-provider-service"
+        }
+      },
+      "template" : {
+        "metadata" : {
+          "name" : "my-provider-app",
+          "labels" : {
+            "name" : "my-provider-app",
+            "service" : "my-provider-service",
+            "biz-app-id" : "retail"
+          }
+        },
+        "spec" : {
+          "containers" : [ {
+            "name" : "my-provider-app",
+            "ports" : [ {
+              "name" : "http",
+              "containerPort" : 8080,
+              "protocol" : "TCP"
+            } ],
+            "imagePullPolicy" : "Always",
+            "image" : "chaostoolkit/simple-microservice-provider:before",
+            "resources" : {
+              "limits" : {
+                "cpu" : 0.4,
+                "memory" : "256Mi"
+              },
+              "requests" : {
+                "cpu" : 0.2,
+                "memory" : "256Mi"
+              }
+            }
+          } ]
+        }
+      },
+      "strategy" : {
+        "type" : "RollingUpdate",
+        "rollingUpdate" : {
+          "maxUnavailable" : 1,
+          "maxSurge" : 1
+        }
+      }
+    }
+  }

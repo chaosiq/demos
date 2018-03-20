@@ -1,0 +1,10 @@
+endpoints:
+  restart:
+    enabled: true
+  shutdown:
+    enabled: true
+
+consumed:
+  microservice:
+    name: "simple-spring-boot-provider.local.pcfdev.io"
+    url: "http://simple-spring-boot-provider.local.pcfdev.io/"
