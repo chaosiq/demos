@@ -1,0 +1,57 @@
+{
+    "version": "1.0.0",
+    "title": "System is resilient to provider's failures",
+    "description": "Can our consumer survive gracefully a provider's failure?",
+    "tags": [
+        "service",
+        "kubernetes"
+    ],
+    "steady-state-hypothesis": {
+        "title": "Services are all available and healthy",
+        "probes": [
+            {
+                "type": "probe",
+                "name": "application-must-respond-normally",
+                "tolerance": 200,
+                "provider": {
+                    "type": "http",
+                    "url": "http://192.168.99.100:32638/invokeConsumedService",
+                    "timeout": 3
+                }
+            },
+            {
+                "type": "probe",
+                "name": "pods_in_phase",
+                "tolerance": true,
+                "pauses": {
+                    "before": 20
+                },
+                "provider": {
+                    "type": "python",
+                    "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
+                    "arguments": {
+                        "label_selector": "biz-app-id=retail",
+                        "phase": "Running",
+                        "ns": "default"
+                    }
+                }
+            }
+        ]
+    },
+    "method": [
+        {
+            "type": "action",
+            "name": "terminate_pods",
+            "provider": {
+                "type": "python",
+                "module": "chaosk8s.pod.actions",
+                "func": "terminate_pods",
+                "arguments": {
+                    "label_selector": "service=my-provider-service",
+                    "ns": "default"
+                }
+            }
+        }
+    ]
+}

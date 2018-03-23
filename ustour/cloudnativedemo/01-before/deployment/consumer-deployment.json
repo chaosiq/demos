@@ -1,0 +1,54 @@
+{
+    "apiVersion" : "apps/v1beta1",
+    "kind" : "Deployment",
+    "metadata" : {
+      "name" : "my-consumer-app"
+    },
+    "spec" : {
+      "replicas" : 1,
+      "selector" : {
+        "matchLabels" : {
+          "service" : "my-consumer-service"
+        }
+      },
+      "template" : {
+        "metadata" : {
+          "name" : "my-consumer-app",
+          "labels" : {
+            "name" : "my-consumer-app",
+            "service" : "my-consumer-service",
+            "biz-app-id" : "retail"
+          }
+        },
+        "spec" : {
+          "containers" : [ {
+            "name" : "my-consumer-app",
+            "ports" : [ {
+              "name" : "http",
+              "containerPort" : 8080,
+              "protocol" : "TCP"
+            } ],
+            "imagePullPolicy" : "Always",
+            "image" : "chaostoolkit/simple-boot-feign-direct-microservice-consumer:before",
+            "resources" : {
+              "limits" : {
+                "cpu" : 0.4,
+                "memory" : "512Mi"
+              },
+              "requests" : {
+                "cpu" : 0.2,
+                "memory" : "256Mi"
+              }
+            }
+          } ]
+        }
+      },
+      "strategy" : {
+        "type" : "RollingUpdate",
+        "rollingUpdate" : {
+          "maxUnavailable" : 1,
+          "maxSurge" : 1
+        }
+      }
+    }
+  }
