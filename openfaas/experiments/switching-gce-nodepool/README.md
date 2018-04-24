@@ -66,6 +66,26 @@ Run the experiment as follows:
 (chaostk) $ chaos run experiments/switching-gce-nodepool/experiment.json
 ```
 
+Here is a sample of this experiment being [executed][asciinema]:
+
+![Chaos Toolkit Experiment Run][run]
+
+[asciinema]: https://asciinema.org/a/178130
+[run]: https://raw.githubusercontent.com/chaosiq/demos/master/openfaas/experiments/switching-gce-nodepool/chaostoolkit-run.gif
+
+At the same time, let's have a view of our system via [Weave Cloud][weave].
+
+[weave]: https://cloud.weave.works/
+
+![System View via Weave Scope][weavescope]
+
+[weavescope]: https://raw.githubusercontent.com/chaosiq/demos/master/openfaas/experiments/switching-gce-nodepool/system-view.gif
+
+Notice how the new node joins the cluster and how OpenFaaS reacts by distributing
+the load accordingly once the nodes on the existing nodepool have been cordon.
+
+Note also how we uncordon those nodes and delete the new nodepool in the rollbacks.
+
 ## Reporting
 
 You can create a [report][chaostoolkitreporting] of the results as follows:
@@ -75,3 +95,10 @@ You can create a [report][chaostoolkitreporting] of the results as follows:
 ```
 
 [chaostoolkitreporting]: https://github.com/chaostoolkit/chaostoolkit-reporting
+
+You can find an example of such a report [here][report].
+
+[report]: https://raw.githubusercontent.com/chaosiq/demos/master/openfaas/experiments/switching-gce-nodepool/report.pdf
+
+We notice a few 503 indicating that some users could be impacted in the operation.
+However this could also be an experiment artifact.
