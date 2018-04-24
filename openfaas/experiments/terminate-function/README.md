@@ -52,7 +52,7 @@ Here is a sample of this experiment being [executed][asciinema]:
 
 ![Chaos Toolkit Experiment Run][run]
 
-[asciinema]: https://asciinema.org/a/178112
+[asciinema]: https://asciinema.org/a/178132
 [run]: https://raw.githubusercontent.com/chaosiq/demos/master/openfaas/experiments/terminate-function/chaostoolkit-run.gif
 
 At the same time, let's have a view of our system via [Weave Cloud][weave].
@@ -76,3 +76,7 @@ You can create a [report][chaostoolkitreporting] of the results as follows:
 You can find an example of such a report [here][report].
 
 [report]: https://raw.githubusercontent.com/chaosiq/demos/master/openfaas/experiments/terminate-function/report.pdf
+
+The sheer number of 50x and connection failures confirm our hunch, one pod isn't
+enough and will impact users when down. Quite obvious but we have data now :)
+

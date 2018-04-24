@@ -100,5 +100,5 @@ You can find an example of such a report [here][report].
 
 [report]: https://raw.githubusercontent.com/chaosiq/demos/master/openfaas/experiments/switching-gce-nodepool/report.pdf
 
-We notice a few 503 indicating that some users could be impacted in the operation.
+We notice a few 502 indicating that some users could be impacted in the operation.
 However this could also be an experiment artifact.
