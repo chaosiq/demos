@@ -48,9 +48,12 @@ Run the experiment as follows:
 (chaostk) $ chaos run experiments/terminate-function/experiment.json
 ```
 
-Here is a sample of this experiment being executed:
+Here is a sample of this experiment being [executed][asciinema]:
 
-[![asciicast](https://asciinema.org/a/178112.png)](https://asciinema.org/a/178112)
+[Chaos Toolkit Experiment Run][run]
+
+[asciinema]: https://asciinema.org/a/178112
+[run]: https://raw.githubusercontent.com/chaosiq/demos/master/openfaas/experiments/terminate-function/chaostoolkit-run.gif
 
 At the same time, let's have a view of our system via [Weave Cloud][weave].
 
@@ -70,6 +73,6 @@ You can create a [report][chaostoolkitreporting] of the results as follows:
 
 [chaostoolkitreporting]: https://github.com/chaostoolkit/chaostoolkit-reporting
 
-You can find an example of such a report [here].
+You can find an example of such a report [here][report].
 
 [report]: https://raw.githubusercontent.com/chaosiq/demos/master/openfaas/experiments/terminate-function/report.pdf
