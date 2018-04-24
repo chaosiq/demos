@@ -39,6 +39,9 @@ $ kubectl -n openfaas create secret generic basic-auth --from-file=auth
 $ kubectl apply -f manifests/ingress/openfaas-gateway.yaml
 ```
 
+Once it's all up and running, you will be able to see the OpenFaaS dashboard
+at http://demo.foo.bar/ui/ and log with the credentials you created before.
+
 ## Optional steps
 
 The following steps are not mandatory so you can skip them.
