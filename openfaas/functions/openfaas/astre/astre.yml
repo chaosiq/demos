@@ -1,0 +1,9 @@
+provider:
+  name: faas
+  gateway: http://demo.foo.bar
+
+functions:
+  astre:
+    lang: python3-flask
+    handler: ./astre
+    image: chaosiq/demos-openfaas-astre

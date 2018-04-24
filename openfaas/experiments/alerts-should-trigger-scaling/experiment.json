@@ -1,0 +1,183 @@
+{
+    "version": "1.0.0",
+    "title": "OpenFaaS should autoscale on load too high",
+    "description": "When the load is too high, an alert should trigger a scaling up of the function.",
+    "tags": [
+        "kubernetes",
+        "openfaas",
+        "cloudnative"
+    ],
+    "configuration": {
+        "prometheus_base_url": "http://demo.foo.bar"
+    },
+    "secrets": {
+        "global": {
+            "auth": "Basic amFuZTpkZW1v"
+        }
+    },
+    "steady-state-hypothesis": {
+        "title": "Function is available",
+        "probes": [
+            {
+                "type": "probe",
+                "name": "function-must-exist",
+                "tolerance": 200,
+                "provider": {
+                    "type": "http",
+                    "secrets": ["faas"],
+                    "url": "http://demo.foo.bar/system/function/astre",
+                    "headers": {
+                        "Authorization": "${auth}"
+                    }
+                }
+            },
+            {
+                "type": "probe",
+                "name": "function-must-respond",
+                "tolerance": 200,
+                "provider": {
+                    "type": "http",
+                    "timeout": 3,
+                    "secrets": ["global"],
+                    "url": "http://demo.foo.bar/function/astre",
+                    "method": "POST",
+                    "headers": {
+                        "Content-Type": "application/json",
+                        "Authorization": "${auth}"
+                    },
+                    "arguments": {
+                        "city": "Paris"
+                    }
+                }
+            },
+            {
+                "type": "probe",
+                "name": "there-should-be-only-one-running-function-pod",
+                "tolerance": 1,
+                "provider": {
+                    "type": "python",
+                    "module": "chaosk8s.pod.probes",
+                    "func": "count_pods",
+                    "arguments": {
+                        "ns": "openfaas-fn",
+                        "label_selector": "faas_function=astre",
+                        "phase": "Running"
+                    }
+                }
+            },
+            {
+                "type": "probe",
+                "name": "there-should-be-no-active-alerts",
+                "tolerance": {
+                    "type": "jsonpath",
+                    "path": "$.data.result[?metric.alertname=='APIHighInvocationRate']",
+                    "count": 0
+                },
+                "provider": {
+                    "type": "python",
+                    "module": "chaosprometheus.probes",
+                    "func": "query",
+                    "secrets": ["global"],
+                    "arguments": {
+                        "query": "ALERTS"
+                    }
+                }
+            }
+        ]
+    },
+    "method": [
+        {
+            "type": "action",
+            "name": "simulate-user-traffic-under-heavy-load",
+            "background": true,
+            "provider": {
+                "type": "process",
+                "path": "vegeta",
+                "arguments": "attack -targets=data/scenario.txt -workers=8 -rate=30 -timeout=3s -duration=50s -output=result.bin"
+            }
+        },
+        {
+            "type": "probe",
+            "name": "we-should-see-active-alerts",
+            "provider": {
+                "type": "python",
+                "module": "chaosprometheus.probes",
+                "func": "query",
+                "secrets": ["global"],
+                "arguments": {
+                    "query": "ALERTS"
+                }
+            },
+            "pauses": {
+                "before": 30
+            }
+        },
+        {
+            "type": "probe",
+            "name": "we-should-now-see-many-function-pods",
+            "provider": {
+                "type": "python",
+                "module": "chaosk8s.pod.probes",
+                "func": "count_pods",
+                "arguments": {
+                    "ns": "openfaas-fn",
+                    "label_selector": "faas_function=astre",
+                    "phase": "Running"
+                }
+            },
+            "pauses": {
+                "before": 20
+            }
+        },
+        {
+            "type": "probe",
+            "name": "query-number-of-functions",
+            "provider": {
+                "type": "python",
+                "module": "chaosprometheus.probes",
+                "func": "query_interval",
+                "secrets": ["global"],
+                "arguments": {
+                    "query": "gateway_service_count{function_name='astre'}",
+                    "start": "1 minute ago",
+                    "end": "now",
+                    "step": 1
+                }
+            },
+            "pauses": {
+                "before": 30
+            }
+        },
+        {
+            "type": "probe",
+            "name": "fetch-openfaas-gateway-logs",
+            "provider": {
+                "type": "python",
+                "module": "chaosk8s.pod.probes",
+                "func": "read_pod_logs",
+                "arguments": {
+                    "label_selector": "app=gateway",
+                    "last": "85s",
+                    "ns": "openfaas"
+                }
+            }
+        },
+        {
+            "type": "probe",
+            "name": "query-total-function-invocation",
+            "provider": {
+                "type": "python",
+                "module": "chaosprometheus.probes",
+                "func": "query_interval",
+                "secrets": ["global"],
+                "arguments": {
+                    "query": "gateway_function_invocation_total{function_name='astre'}",
+                    "start": "2 minutes ago",
+                    "end": "now",
+                    "step": 1
+                }
+            }
+        }
+    ],
+    "rollbacks": []
+}

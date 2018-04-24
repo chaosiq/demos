@@ -1,0 +1,16 @@
+GET http://demo.foo.bar/function/astre
+Authorization: Basic amFuZTpkZW1v
+Content-Type: application/json
+@./data/london.json
+
+
+GET http://demo.foo.bar/function/astre
+Authorization: Basic amFuZTpkZW1v
+Content-Type: application/json
+@./data/newyork.json
+
+
+GET http://demo.foo.bar/function/astre
+Authorization: Basic amFuZTpkZW1v
+Content-Type: application/json
+@./data/sydney.json

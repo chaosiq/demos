@@ -1,0 +1,10 @@
+template/
+build/
+*.bin
+__pycache__/
+*.py[cod]
+.vscode/
+report.*
+*.bin
+journal.json
+auth

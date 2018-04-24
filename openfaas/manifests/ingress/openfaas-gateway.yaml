@@ -1,0 +1,61 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: demos
+  namespace: openfaas
+  labels:
+    environment: demo
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 5m
+    #nginx.ingress.kubernetes.io/limit-connections: '5'
+    #nginx.ingress.kubernetes.io/limit-rps: '10'
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: basic-auth
+    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  # enable only if you have valid cert or faas-cli has implemented
+  # https://github.com/openfaas/faas-cli/issues/376
+  #tls:
+  #  - hosts:
+  #      - "demo.foo.bar"
+  #    secretName: demo-tls
+  rules:
+  - host: demo.foo.bar
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: gateway
+          servicePort: 8080
+      - path: /prometheus
+        backend:
+          serviceName: prometheus
+          servicePort: 9090
+      - path: /prometheus/*
+        backend:
+          serviceName: prometheus
+          servicePort: 9090
+      - path: /graph
+        backend:
+          serviceName: prometheus
+          servicePort: 9090
+      - path: /alerts
+        backend:
+          serviceName: prometheus
+          servicePort: 9090
+      - path: /static
+        backend:
+          serviceName: prometheus
+          servicePort: 9090
+      - path: /api/v1
+        backend:
+          serviceName: prometheus
+          servicePort: 9090
+      - path: /*
+        backend:
+          serviceName: gateway
+          servicePort: 8080
