@@ -75,7 +75,7 @@
             "provider": {
                 "type": "process",
                 "path": "vegeta",
-                "arguments": "-cpus 2 attack -targets=data/scenario.txt -workers=2 -connections=1 -rate=3 -timeout=3s -duration=30s -output=result.bin"
+                "arguments": "-cpus 2 attack -targets=data/scenario.txt -workers=2 -connections=1 -rate=3 -timeout=3s -duration=60s -output=result.bin"
             }
         },
         {
@@ -92,7 +92,8 @@
                 }
             },
             "pauses": {
-                "before": 5
+                "before": 5,
+                "after": 30
             }
         },
         {
@@ -104,7 +105,7 @@
                 "func": "read_pod_logs",
                 "arguments": {
                     "label_selector": "app=gateway",
-                    "last": "35s",
+                    "last": "40s",
                     "ns": "openfaas"
                 }
             }

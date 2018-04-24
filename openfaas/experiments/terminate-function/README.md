@@ -52,7 +52,7 @@ Here is a sample of this experiment being [executed][asciinema]:
 
 ![Chaos Toolkit Experiment Run][run]
 
-[asciinema]: https://asciinema.org/a/178132
+[asciinema]: https://asciinema.org/a/178135
 [run]: https://raw.githubusercontent.com/chaosiq/demos/master/openfaas/experiments/terminate-function/chaostoolkit-run.gif
 
 At the same time, let's have a view of our system via [Weave Cloud][weave].
@@ -80,3 +80,10 @@ You can find an example of such a report [here][report].
 The sheer number of 50x and connection failures confirm our hunch, one pod isn't
 enough and will impact users when down. Quite obvious but we have data now :)
 
+We can also see the gateway logs showing us the error to connect to the
+backend function.
+
+The prometheus query to fetch the number of responses per status code needs
+probably some tuning as it doesn't show the increase. Likely the wrong range.
+This demonstrates that the making for an experiment is a game of patience and
+careful observation.
