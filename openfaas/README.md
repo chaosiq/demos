@@ -14,22 +14,30 @@ experiments targetting [OpenFaaS][openfaas] and [Kubernetes][k8s].
 
 The following experiments are provided:
 
-* Terminating an OpenFaaS function pod should not impact users querying it
-* Does OpenFaaS scale up automatically when load gets high?
-* [[GCE only][gce]] Switching to a new nodepool should have a minimum impact on
+* [Terminating an OpenFaaS function pod][term] should not impact users querying it
+* Does [OpenFaaS scale up and down automatically][scale] when load gets high/down?
+* [[GCE only][gce]] [Switching to a new nodepool][nnp] should have a minimum impact on
   users
 
 New experiments will be added in the future.
+
+[term]: https://github.com/chaosiq/demos/tree/master/openfaas/experiments/terminate-function
+[scale]: https://github.com/chaosiq/demos/tree/master/openfaas/experiments/alerts-should-trigger-scaling
+[nnp]: https://github.com/chaosiq/demos/tree/master/openfaas/experiments/switching-gce-nodepool
 
 ## Requirements
 
 Those experiments can be reproduced on your environment. Please read the
 following guides to set it up:
 
-* minikube-setup: if you wish to run on a local [Minikube][mk]
-* gce-setup: if you wish to run against [Google Kubernetes Engine][gke]
-* openfaas-setup: once you have you created your Kubernetes cluster, how to
+* [minikube-setup][mks]: if you wish to run on a local [Minikube][mk]
+* [gce-setup][gces]: if you wish to run against [Google Kubernetes Engine][gke]
+* [openfaas-setup][ofaass]: once you have you created your Kubernetes cluster, how to
   deploy OpenFaaS
+
+[mks]: https://github.com/chaosiq/demos/blob/master/openfaas/minikube-setup.md
+[gces]: https://github.com/chaosiq/demos/blob/master/openfaas/gce-setup.md
+[ofaass]: https://github.com/chaosiq/demos/blob/master/openfaas/openfaas-setup.md
 
 ## Usage
 

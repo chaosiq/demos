@@ -59,7 +59,7 @@ $ openssl req -x509 -newkey rsa:2048 -sha256 -nodes \
 
 Replace the subject entries with whatever suits you.
 
-### Create a secret for your certificate
+### Create a secret for your certificate
 
 Save your certificate as a secret for the ingress to use:
 
