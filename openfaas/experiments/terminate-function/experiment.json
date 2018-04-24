@@ -20,6 +20,21 @@
         "probes": [
             {
                 "type": "probe",
+                "name": "there-should-be-only-one-running-function-pod",
+                "tolerance": 1,
+                "provider": {
+                    "type": "python",
+                    "module": "chaosk8s.pod.probes",
+                    "func": "count_pods",
+                    "arguments": {
+                        "ns": "openfaas-fn",
+                        "label_selector": "faas_function=astre",
+                        "phase": "Running"
+                    }
+                }
+            },
+            {
+                "type": "probe",
                 "name": "function-must-exist",
                 "tolerance": 200,
                 "provider": {
