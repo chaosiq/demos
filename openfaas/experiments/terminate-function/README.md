@@ -50,7 +50,7 @@ Run the experiment as follows:
 
 Here is a sample of this experiment being [executed][asciinema]:
 
-[Chaos Toolkit Experiment Run][run]
+![Chaos Toolkit Experiment Run][run]
 
 [asciinema]: https://asciinema.org/a/178112
 [run]: https://raw.githubusercontent.com/chaosiq/demos/master/openfaas/experiments/terminate-function/chaostoolkit-run.gif
