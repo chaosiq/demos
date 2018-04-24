@@ -4,7 +4,7 @@ build/
 __pycache__/
 *.py[cod]
 .vscode/
-report.*
+!report.pdf
 *.bin
 journal.json
 auth
