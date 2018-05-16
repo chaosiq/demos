@@ -24,7 +24,7 @@
                 "tolerance": 200,
                 "provider": {
                     "type": "http",
-                    "secrets": ["faas"],
+                    "secrets": ["global"],
                     "url": "http://demo.foo.bar/system/function/astre",
                     "headers": {
                         "Authorization": "${auth}"
@@ -93,7 +93,7 @@
             "provider": {
                 "type": "process",
                 "path": "vegeta",
-                "arguments": "attack -targets=data/scenario.txt -workers=8 -rate=60 -timeout=3s -duration=50s -output=result.bin"
+                "arguments": "attack -targets=data/scenario.txt -workers=8 -rate=30 -timeout=3s -duration=50s -output=result.bin"
             }
         },
         {

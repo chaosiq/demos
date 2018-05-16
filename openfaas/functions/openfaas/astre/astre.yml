@@ -7,3 +7,6 @@ functions:
     lang: python3-flask
     handler: ./astre
     image: chaosiq/demos-openfaas-astre
+    labels:
+      "com.openfaas.scale.min": "1"
+      "com.openfaas.scale.max": "20"

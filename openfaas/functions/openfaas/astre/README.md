@@ -32,6 +32,12 @@ with a minikube cluster:
 $ export OPENFAAS_URL=$(minikube ip):31112
 ```
 
+Login, to set the credentials:
+
+```
+$ faas-cli login -u jane --password demo --gateway http://demo.foo.bar
+```
+
 Then you can rebuild the image:
 
 ```
