@@ -133,5 +133,5 @@ against it. You will find a set of pre-defined ones in the `experiments`
 directory. To run one, use the [chaostoolkit][chaostoolkit] as follows:
 
 ```console
-$ chaos run experiments/terminate-db-instance.json
+$ chaos run experiments/db-connection-loss-does-not-harm-availability/terminate-db-instance.json
 ```

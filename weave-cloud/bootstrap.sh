@@ -5,7 +5,7 @@ function init_cluster () {
     local driver=$1
     shift
     
-    minikube start --vm-driver=$driver --memory=4096 --cpus=2 \
+    minikube start --vm-driver=$driver --memory=8192 --cpus=4 \
         --extra-config=apiserver.Authorization.Mode=RBAC
     sleep 2s
 }

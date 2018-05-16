@@ -17,10 +17,10 @@
                 "tolerance": true,
                 "provider": {
                     "type": "python",
-                    "module": "chaosk8s.probes",
-                    "func": "microservice_available_and_healthy",
+                    "module": "chaosk8s.pod.probes",
+                    "func": "pods_in_phase",
                     "arguments": {
-                        "name": "frontend-app",
+                        "label_selector": "app=frontend-app",
                         "ns": "default"
                     }
                 }
