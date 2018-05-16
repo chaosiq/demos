@@ -87,7 +87,7 @@
                             "name": "yet-other-pool",
                             "management": {},
                             "initialNodeCount": 1,
-                            "version": "1.9.7-gke.0",
+                            "version": "1.9.6-gke.1",
                             "config": {
                                 "diskSizeGb": 100,
                                 "imageType": "COS",
