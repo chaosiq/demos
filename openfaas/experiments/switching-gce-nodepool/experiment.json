@@ -68,7 +68,7 @@
             "provider": {
                 "type": "process",
                 "path": "vegeta",
-                "arguments": "attack -targets=data/scenario.txt -workers=5 -rate=10 -timeout=3s -duration=90s -output=result.bin"
+                "arguments": "attack -targets=data/scenario.txt -workers=5 -rate=10 -timeout=3s -duration=130s -output=result.bin"
             }
         },
         {
