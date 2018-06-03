@@ -1,0 +1,52 @@
+{
+    "version": "1.0.0",
+    "title": "Hijack public process to read from baddy backend service",
+    "description": "Hijack public process to read from baddy backend service",
+    "tags": [
+        "security"
+    ],
+    "steady-state-hypothesis": {
+        "title": "Public services can retrieve data from backend",
+        "probes": [
+            {
+                "type": "probe",
+                "name": "public-service-must-respond-hello-world",
+                "tolerance": {
+                    "type": "regex",
+                    "target": "body",
+                    "pattern": "Hello world"
+                },
+                "provider": {
+                    "type": "http",
+                    "url": "http://localhost:7090/"
+                }
+            }
+        ]
+    },
+    "method": [
+        {
+            "type": "action",
+            "name": "hijack-public-service-process",
+            "provider": {
+                "type": "python",
+                "module": "chaosnetsec.injection.actions",
+                "func": "connect_to_different_host",
+                "arguments": {
+                    "proc_identifier": {
+                        "name": "python",
+                        "args": ["apps/public.py"]
+                    },
+                    "new_host": "127.0.0.1",
+                    "new_port": 7092,
+                    "old_host": "127.0.0.1",
+                    "old_port": 7091,
+                    "blocking": false
+                }
+            },
+            "pauses": {
+                "after": 2
+            }
+        }
+    ],
+    "rollbacks": []
+}
