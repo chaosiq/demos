@@ -1,7 +1,7 @@
 # Open Security Summit Demo 2018
 
 A small playground for the
-[Open Security Simmut 2018](https://open-security-summit.org).
+[Open Security Summit 2018](https://open-security-summit.org).
 
 This basic system is made of two services talking over HTTP. This is as
 dumb as can be.
