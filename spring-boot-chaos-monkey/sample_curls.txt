@@ -1,0 +1,10 @@
+curl -d '{"level": 5, "latencyRangeStart": 2000, "latencyRangeEnd": 5000, "latencyActive": false, "exceptionsActive": false, "killApplicationActive": true, "restartApplicationActive": false}' -H "Content-Type: application/json" -X POST http://localhost:8080/actuator/chaosmonkey/assaults
+
+
+curl -d '{"level": 5, "latencyRangeStart": 2000, "latencyRangeEnd": 5000, "latencyActive": false, "exceptionsActive": false, "killApplicationActive": false, "restartApplicationActive": false}' -H "Content-Type: application/json" -X POST http://localhost:8080/actuator/chaosmonkey/assaults
+
+
+curl -d '{}' -H "Content-Type: application/json" -X POST http://localhost:8080/actuator/chaosmonkey/assaults
+
+
+curl -d '{"latencyRangeStart": 2000, "latencyRangeEnd": 5000, "latencyActive": false, "exceptionsActive": false, "killApplicationActive": false, "restartApplicationActive": false}' -H "Content-Type: application/json" -X POST http://localhost:8080/actuator/chaosmonkey/assaults

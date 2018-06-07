@@ -1,7 +1,0 @@
----
-applications:
-  - name: simple-spring-boot-provider
-    memory: 512M
-    instances: 1
-    buildpack: java_buildpack
-    path: target/simple-microservice-provider-0.1.0-SNAPSHOT.jar
