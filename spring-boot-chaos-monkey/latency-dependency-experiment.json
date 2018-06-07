@@ -1,0 +1,59 @@
+{
+    "version": "1.0.0",
+    "title": "Setting and triggering service dependency death",
+    "description": "Uses the Spring Chaos Monkey to manipulate a service",
+    "tags": [
+        "service",
+        "spring"
+    ],
+    "steady-state-hypothesis": {
+        "probes": [
+            {
+                "name": "consumer-service-must-still-respond",
+                "provider": {
+                    "type": "http",
+                    "url": "http://localhost:8080/invokeConsumedService"
+                },
+                "tolerance": 200,
+                "type": "probe"
+            }
+        ],
+        "title": "System is healthy"
+    },
+    "method": [
+        {
+            "name": "enable_chaosmonkey",
+            "provider": {
+                "arguments": {
+                    "base_url": "http://localhost:8090/actuator"
+                },
+                "func": "enable_chaosmonkey",
+                "module": "chaosspring.actions",
+                "type": "python"
+            },
+            "type": "action"
+        },
+        {
+            "name": "configure_assaults",
+            "provider": {
+                "arguments": {
+                    "base_url": "http://localhost:8090/actuator",
+                    "assaults_configuration": {
+                        "level": 1,
+                        "latencyRangeStart": 10000,
+                        "latencyRangeEnd": 10000,
+                        "latencyActive": true,
+                        "exceptionsActive": false,
+                        "killApplicationActive": false,
+                        "restartApplicationActive": false
+                    }
+                },
+                "func": "change_assaults_configuration",
+                "module": "chaosspring.actions",
+                "type": "python"
+            },
+            "type": "action"
+        }
+    ],
+    "rollbacks": []
+}
