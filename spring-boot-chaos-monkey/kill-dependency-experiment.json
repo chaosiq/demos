@@ -60,7 +60,6 @@
                 "type": "http",
                 "url": "http://localhost:8080/"
             },
-            "tolerance": 200,
             "type": "probe"
         }
     ],
