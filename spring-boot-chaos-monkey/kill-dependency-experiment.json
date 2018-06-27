@@ -6,6 +6,21 @@
         "service",
         "spring"
     ],
+    "extensions": [
+        {
+             "vendor": "chaoshub",
+             "contributions": [ {
+                 "name": "resiliency", "ratio": 100 
+                 }, 
+                 { "name": "security", "ratio": 50
+             },
+                 { "name": "level", "ratio": 1 } ]
+        },
+        {
+            "vendor": "microsoft",
+            "responsible_team": ".Net Core"
+        }
+    ],
     "steady-state-hypothesis": {
         "probes": [
             {

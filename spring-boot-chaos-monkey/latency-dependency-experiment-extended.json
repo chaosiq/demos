@@ -15,7 +15,8 @@
                     "url": "http://localhost:8080/invokeConsumedService"
                 },
                 "tolerance": 200,
-                "type": "probe"
+                "type": "probe",
+                "timeout": 1
             }
         ],
         "title": "System is healthy"
@@ -53,23 +54,23 @@
                 "type": "python"
             },
             "type": "action"
-        }
-    ],
-    "rollbacks": [
+        },
         {
-            "name": "disable_chaosmonkey",
+            "name": "get_configured_assaults",
             "provider": {
                 "arguments": {
                     "base_url": "http://localhost:8090/actuator"
                 },
-                "func": "disable_chaosmonkey",
-                "module": "chaosspring.actions",
+                "func": "assaults_configuration",
+                "module": "chaosspring.probes",
                 "type": "python"
             },
-            "type": "action"
-        },
+            "type": "probe"
+        }
+    ],
+    "rollbacks": [
         {
-            "name": "configure_assaults",
+            "name": "configure_assaults", 
             "provider": {
                 "arguments": {
                     "base_url": "http://localhost:8090/actuator",
@@ -88,5 +89,18 @@
                 "type": "python"
             },
             "type": "action"
-        }]
+        },
+        {
+            "name": "disable_chaosmonkey",
+            "provider": {
+                "arguments": {
+                    "base_url": "http://localhost:8090/actuator"
+                },
+                "func": "disable_chaosmonkey",
+                "module": "chaosspring.actions",
+                "type": "python"
+            },
+            "type": "action"
+        }
+    ]
 }
