@@ -125,6 +125,16 @@ a local environment variable. The second export command will be used by the
 Chaos Toolkit experiment and the patch the ingress indicates to tell which
 host we want to resolve on requests.
 
+## Full cleanup
+
+Do not forget to destroy your resources when you are finished.
+
+```
+$ kubectl --kubeconfig=$HOME/.kube/eksctl/clusters/chaos-cluster delete \
+    -f manifests
+$ eksctl delete cluster --name chaos-cluster
+```
+
 ## The Experiments
 
 Now you have installed and configured properly your local machine, please
