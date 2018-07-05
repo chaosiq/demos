@@ -131,7 +131,10 @@ Do not forget to destroy your resources when you are finished.
 
 ```
 $ kubectl --kubeconfig=$HOME/.kube/eksctl/clusters/chaos-cluster delete \
-    -f manifests
+    -f manifests \
+    -f manifests/backend \
+    -f manifests/frontend \
+    -f manifests/ingress
 $ eksctl delete cluster --name chaos-cluster
 ```
 
