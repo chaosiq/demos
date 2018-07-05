@@ -1,0 +1,22 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: backend-app
+data:
+  application.properties: |-
+    spring.application.name=BackendDemo
+
+    spring.profiles.active=chaos-monkey
+    chaos.monkey.enabled=false
+
+    management.endpoint.chaosmonkey.enabled=true
+
+    management.endpoints.web.exposure.include=*
+
+    chaos.monkey.assaults.latencyActive=false
+    chaos.monkey.assaults.killApplicationActive=false
+    chaos.monkey.watcher.restController=true
+
+    chaos.monkey.assaults.level=1
+

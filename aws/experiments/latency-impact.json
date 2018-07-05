@@ -1,0 +1,104 @@
+{
+    "version": "1.0.0",
+    "title": "How does latency from the backend impacts the frontend?",
+    "description": "Assuming the backend gets slow, do we also slow down the frontend? What would we do if that's the case?",
+    "tags": [
+        "kubernetes",
+        "eks",
+        "springbopt"
+    ],
+    "configuration": {
+        "base_url": {
+            "type": "env",
+            "key": "ELB_ROOT_URL"
+        }
+    },
+    "steady-state-hypothesis": {
+        "title": "We can multiply two numbers under a second",
+        "probes": [
+            {
+                "name": "app-must-respond",
+                "type": "probe",
+                "tolerance": {
+                    "type": "regex",
+                    "pattern": "[0-9]*",
+                    "target": "body"
+                },
+                "provider": {
+                    "type": "http",
+                    "timeout": 1,
+                    "url": "${base_url}/multiply?a=6&b=7"
+                }
+            }
+        ]
+    },
+    "method": [
+        {
+            "name": "enable_chaosmonkey",
+            "type": "action",
+            "provider": {
+                "func": "enable_chaosmonkey",
+                "module": "chaosspring.actions",
+                "type": "python",
+                "arguments": {
+                    "base_url": "${base_url}/backend/actuator"
+                }
+            }
+        },
+        {
+            "name": "configure_assaults",
+            "type": "action",
+            "provider": {
+                "func": "change_assaults_configuration",
+                "module": "chaosspring.actions",
+                "type": "python",
+                "arguments": {
+                    "base_url": "${base_url}/backend/actuator",
+                    "assaults_configuration": {
+                        "level": 1,
+                        "latencyRangeStart": 10000,
+                        "latencyRangeEnd": 10000,
+                        "latencyActive": true,
+                        "exceptionsActive": false,
+                        "killApplicationActive": false,
+                        "restartApplicationActive": false
+                    }
+                }
+            }
+        }
+    ],
+    "rollbacks": [
+        {
+            "name": "disable_chaosmonkey",
+            "type": "action",
+            "provider": {
+                "func": "disable_chaosmonkey",
+                "module": "chaosspring.actions",
+                "type": "python",
+                "arguments": {
+                    "base_url": "${base_url}/backend/actuator"
+                }
+            }
+        },
+        {
+            "name": "configure_assaults",
+            "type": "action",
+            "provider": {
+                "func": "change_assaults_configuration",
+                "module": "chaosspring.actions",
+                "type": "python",
+                "arguments": {
+                    "base_url": "${base_url}/backend/actuator",
+                    "assaults_configuration": {
+                        "level": 1,
+                        "latencyRangeStart": 10000,
+                        "latencyRangeEnd": 10000,
+                        "latencyActive": false,
+                        "exceptionsActive": false,
+                        "killApplicationActive": false,
+                        "restartApplicationActive": false
+                    }
+                }
+            }
+        }]
+}

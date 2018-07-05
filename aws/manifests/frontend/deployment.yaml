@@ -1,0 +1,68 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: frontend-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: frontend-service
+  template:
+    metadata:
+      name: frontend-app
+      labels:
+        name: frontend-app
+        app: frontend-app
+        service: frontend-service
+    spec:
+      containers:
+      - name: frontend-app
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        imagePullPolicy: IfNotPresent
+        image: chaostoolkit/spring-frontend-app:0.0.1-SNAPSHOT
+        args:
+          - --spring.config.location=file:/etc/springboot/application.properties
+        volumeMounts:
+        - name: settings
+          mountPath: /etc/springboot
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            path: "/status"
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 3
+        readinessProbe:
+          httpGet:
+            scheme: HTTP
+            path: "/health"
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 3
+        resources:
+          limits:
+            cpu: 0.4
+            memory: 768Mi
+          requests:
+            cpu: 0.2
+            memory: 256Mi
+      dnsPolicy: ClusterFirst
+      volumes:
+      - name: settings
+        configMap:
+          name: frontend-app
+          items:
+          - key: application.properties
+            path: application.properties
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
