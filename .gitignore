@@ -127,3 +127,6 @@ journal.json
 .settings
 
 
+
+.factorypath
+.attach_pid*
