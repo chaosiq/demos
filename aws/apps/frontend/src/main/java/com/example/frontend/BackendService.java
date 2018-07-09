@@ -10,6 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -28,7 +29,11 @@ public class BackendService {
 
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.rootUri(properties.getUrl()).build();
+        return builder
+            .rootUri(properties.getUrl())
+            .setConnectTimeout(500)
+            .setReadTimeout(1000)
+            .build();
     }
 
     @ConfigurationProperties(prefix="backend")
@@ -45,14 +50,18 @@ public class BackendService {
     }
 
     public String multiply(Integer a, Integer b) {
-        ResponseEntity<String> response = restTemplate.exchange(
-            "/multiply?a={a}&b={b}",
-            HttpMethod.GET,
-            HttpEntity.EMPTY,
-            String.class,
-            a.toString(),
-            b.toString()
-        );
-        return response.getBody();
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                "/multiply?a={a}&b={b}",
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                String.class,
+                a.toString(),
+                b.toString()
+            );
+            return response.getBody();
+        } catch (RestClientException e) {
+            return null;
+        }
     }
 }
