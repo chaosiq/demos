@@ -1,0 +1,75 @@
+{
+    "version": "1.0.0",
+    "title": "Are we still available when one of the nodes go down?",
+    "description": "We want to explore the response to our users when a VM instances, hosting a Kubernetes worker, goes down.",
+    "tags": [
+        "kubernetes",
+        "eks"
+    ],
+    "configuration": {
+        "aws_region": "us-west-2",
+        "base_url": {
+            "type": "env",
+            "key": "ELB_ROOT_URL"
+        }
+    },
+    "steady-state-hypothesis": {
+        "title": "We can multiply two numbers under a second",
+        "probes": [
+            {
+                "name": "app-must-respond",
+                "type": "probe",
+                "tolerance": {
+                    "type": "regex",
+                    "pattern": "[0-9]*",
+                    "target": "body"
+                },
+                "provider": {
+                    "type": "http",
+                    "timeout": 1,
+                    "url": "${base_url}/multiply?a=6&b=7"
+                }
+            }
+        ]
+    },
+    "method": [
+        {
+            "name": "delete_one_randomly_picked_EKS_node",
+            "type": "action",
+            "provider": {
+                "func": "stop_instance",
+                "module": "chaosaws.ec2.actions",
+                "type": "python",
+                "arguments": {
+                    "filters": [
+                        {
+                            "Name": "instance-state-name",
+                            "Values": ["running"]
+                        },
+                        {
+                            "Name": "tag-key", 
+                            "Values": ["eksctl.cluster.k8s.io/v1alpha1/cluster-name"]
+                        },
+                        {
+                            "Name": "tag-value",
+                            "Values": ["chaos-cluster"]
+                        }
+                    ]
+                }
+            },
+            "pauses": {
+                "after": 30
+            }
+        },
+        {
+            "name": "list_worker_nodes",
+            "type": "action",
+            "provider": {
+                "func": "get_nodes",
+                "module": "chaosk8s.node.probes",
+                "type": "python"
+            }
+        }
+    ],
+    "rollbacks": []
+}
