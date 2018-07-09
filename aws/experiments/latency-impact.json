@@ -21,12 +21,11 @@
                 "type": "probe",
                 "tolerance": {
                     "type": "regex",
-                    "pattern": "[0-9]*",
+                    "pattern": "^[0-9]*$",
                     "target": "body"
                 },
                 "provider": {
                     "type": "http",
-                    "timeout": 1,
                     "url": "${base_url}/multiply?a=6&b=7"
                 }
             }
@@ -57,7 +56,7 @@
                     "assaults_configuration": {
                         "level": 1,
                         "latencyRangeStart": 10000,
-                        "latencyRangeEnd": 10000,
+                        "latencyRangeEnd": 15000,
                         "latencyActive": true,
                         "exceptionsActive": false,
                         "killApplicationActive": false,
@@ -92,7 +91,7 @@
                     "assaults_configuration": {
                         "level": 1,
                         "latencyRangeStart": 10000,
-                        "latencyRangeEnd": 10000,
+                        "latencyRangeEnd": 15000,
                         "latencyActive": false,
                         "exceptionsActive": false,
                         "killApplicationActive": false,

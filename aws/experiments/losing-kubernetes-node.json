@@ -21,12 +21,11 @@
                 "type": "probe",
                 "tolerance": {
                     "type": "regex",
-                    "pattern": "[0-9]*",
+                    "pattern": "^[0-9]*$",
                     "target": "body"
                 },
                 "provider": {
                     "type": "http",
-                    "timeout": 1,
                     "url": "${base_url}/multiply?a=6&b=7"
                 }
             }
@@ -58,7 +57,7 @@
                 }
             },
             "pauses": {
-                "after": 30
+                "after": 40
             }
         },
         {
@@ -68,6 +67,30 @@
                 "func": "get_nodes",
                 "module": "chaosk8s.node.probes",
                 "type": "python"
+            }
+        },
+        {
+            "name": "count_backend_pods",
+            "type": "action",
+            "provider": {
+                "func": "count_pods",
+                "module": "chaosk8s.pod.probes",
+                "type": "python",
+                "arguments": {
+                    "label_selector": "app=backend-app"
+                }
+            }
+        },
+        {
+            "name": "count_frontend_pods",
+            "type": "action",
+            "provider": {
+                "func": "count_pods",
+                "module": "chaosk8s.pod.probes",
+                "type": "python",
+                "arguments": {
+                    "label_selector": "app=frontend-app"
+                }
             }
         }
     ],
