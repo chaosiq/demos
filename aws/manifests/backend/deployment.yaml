@@ -22,7 +22,7 @@ spec:
         - name: http
           containerPort: 8080
           protocol: TCP
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         image: chaostoolkit/spring-backend-app:0.0.1-SNAPSHOT
         args:
           - --spring.config.location=file:/etc/springboot/application.properties
