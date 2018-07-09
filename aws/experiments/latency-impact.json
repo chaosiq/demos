@@ -5,7 +5,7 @@
     "tags": [
         "kubernetes",
         "eks",
-        "springbopt"
+        "springboot"
     ],
     "configuration": {
         "base_url": {
