@@ -101,7 +101,8 @@ $ kubectl --kubeconfig=$HOME/.kube/eksctl/clusters/chaos-cluster \
     apply \
     -f manifests/backend \
     -f manifests/frontend \
-    -f manifests/ingress
+    -f manifests/ingress \
+    -f manifests/ingress.yaml
 ```
 
 Once all of them, which may take a few minutes for the AWS Load Balancer to
@@ -117,13 +118,33 @@ $ export ELB_ROOT_URL="http://${ELB}"
 $ kubectl --kubeconfig=$HOME/.kube/eksctl/clusters/chaos-cluster \
     patch ing app-ing \
     --type='json' \
-    -p='[{"op": "replace", "path": "/spec/rules/0/host", "value":"'${ELB}'"}]'
+    -p='[{"op": "add", "path": "/spec/rules/0/host", "value":"'${ELB}'"}]'
 ```
 
 Those lines are important. The first one captures the DNS of the AWS ELB into
 a local environment variable. The second export command will be used by the
 Chaos Toolkit experiment and the patch the ingress indicates to tell which
 host we want to resolve on requests.
+
+After a few minutes, you may check it is running as expected:
+
+```console
+$ curl "${ELB_ROOT_URL}/multiply?a=4&b=8"
+```
+
+#### Enable Access from the Chaos Toolkit to EKS
+
+As of July 2018, only the Go client library supports the
+[exec-based auth](https://github.com/kubernetes/kubernetes/issues/62185) which
+means you need to create a dedicated service account so the Chaos Toolkit may
+connect to your EKS cluster.
+
+Please, follow the [script here](https://gist.github.com/mreferre/6aae10ddc313dd28b72bdc9961949978)
+to get the appropriate service account.
+
+When the issue above is closed for the Python client, this section will be
+irrelevant. Also, if you run Kubernetes on AWS without EKS (say via Kops),
+you don't have to follow these instructions.
 
 ## Full cleanup
 
@@ -160,3 +181,28 @@ expecting a response in less than a second. Then it enables the chaos monkey
 for Spring that is embedded in the backend and make it response with a rather
 long delay. In turn, the frontend should now take more than 1 second to respond
 failing our experiment.
+
+### EC2 instance going down should not impact service availability
+
+This experiment allows you to explore how service handles the loss of a EC2
+instance (one that is running a Kubernetes worker node).
+
+WARNING: This experiment expects you
+[created a dedicated service account](https://gist.github.com/mreferre/6aae10ddc313dd28b72bdc9961949978)
+so the Chaos Toolkit can talk to the Kubernetes API server. Indeed, by default
+EKS uses the port exec authentification extension which, at the time of this
+writing, is not supported by the Python Kubernetes client yet.
+
+You may simple run it as follows:
+
+```console
+$ export KUBECONFIG=$HOME/.kube/eksctl/clusters/chaos-cluster
+$ chaos run experiments/latency-impact.json
+```
+
+The steady state talks to the service and see it answers accordingly. Then, the
+method stops one EC2 instance randomly by picking one of the EKS node part of
+our cluster. The method lists the Kubernetes remaining nodes, which there
+should be one only now. A new VM instance will join the cluster
+automatically a couple of minutes later, but this experiment doesn't wait for
+it and we check we can still render our service with a single remaining node.
