@@ -1,14 +1,14 @@
 {
     "version": "1.0.0",
-    "title": "Exploring Unauthorised Access to Etc.d",
-    "description": "Unauthorised access to Etc.d is equivalent to having Cluster Admin Permissions. Explore whether it is protected at multiple-levels, not simply network policies.",
+    "title": "Exploring Unauthorised Access to etcd",
+    "description": "Unauthorised access to etcd is equivalent to having the cluster-admin ClusterRole. Explore whether etcd is protected at multiple levels with network controls, not simply network policies.",
     "tags": [
         "controlplane",
         "kubernetes",
         "security"
     ],
     "steady-state-hypothesis": {
-        "title": "Can we access etc.d known ips",
+        "title": "Can we access etcd known ips",
         "probes": [
             {
                 "type": "probe",
@@ -16,9 +16,9 @@
                 "tolerance": 0,
                 "provider": {
                     "type": "process",
-                    "path": "sh",
+                    "path": "bash",
                     "arguments": [
-                        "returnlist.sh"
+                        "nmap-etcd.sh"
                     ]
                 }
             }
@@ -30,7 +30,11 @@
             "name": "delete-network-policies",
             "provider": {
                 "type": "process",
-                "path": "echo"
+                "path": "echo",
+
+                    "arguments": [
+                        "kubectl networkpolicy -n my-test-ns -o short \\| xargs kubectl delete networkpolicy"
+                    ]
             }
         }
     ],
@@ -40,7 +44,11 @@
             "name": "restore-network-policies",
             "provider": {
                 "type": "process",
-                "path": "echo"
+                "path": "echo",
+
+                    "arguments": [
+                        "kubectl apply -f my-networkpolicy/netpol-*.yaml"
+                    ]
             }
         }
     ]
