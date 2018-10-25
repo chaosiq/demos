@@ -15,7 +15,7 @@
                 "tolerance": 200,
                 "provider": {
                     "type": "http",
-                    "url": "http://http://35.189.85.252/",
+                    "url": "http://35.189.85.252/",
                     "timeout": 3
                 }
             },
