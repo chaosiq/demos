@@ -1,0 +1,16 @@
+"method": [
+    {
+        "name": "move-exchange-file",
+        "type": "action",
+        "provider": {
+            "type": "python",
+            "module": "os",
+            "func": "rename",
+            "arguments": {
+                "src": "./exchange.dat",
+                "dst": "./exchange.dat.old"
+            }
+        }
+    }
+]
+}

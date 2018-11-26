@@ -1,0 +1,21 @@
+{
+    "title": "Does our service tolerate the loss of its exchange file?",
+    "description": "Our service reads data from an exchange file, can it support that file disappearing?",
+    "tags": [
+        "tutorial",
+        "filesystem"
+    ],
+    "steady-state-hypothesis": {
+        "title": "The exchange file must exist",
+        "probes": [
+            {
+                "type": "probe",
+                "name": "service-is-unavailable",
+                "tolerance": [200, 503],
+                "provider": {
+                    "type": "http",
+                    "url": "http://localhost:8080/"
+                }
+            }
+        ]
+    },
