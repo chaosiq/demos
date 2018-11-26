@@ -1,0 +1,55 @@
+{
+    "version": "1.0.0",
+    "title": "Exploring Unauthorised Access to etcd",
+    "description": "Unauthorised access to etcd is equivalent to having the cluster-admin ClusterRole. Explore whether etcd is protected at multiple levels with network controls, not simply network policies.",
+    "tags": [
+        "controlplane",
+        "kubernetes",
+        "security"
+    ],
+    "steady-state-hypothesis": {
+        "title": "Can we access etcd known ips",
+        "probes": [
+            {
+                "type": "probe",
+                "name": "check-access-to-known-list-of-etcd-ips",
+                "tolerance": 0,
+                "provider": {
+                    "type": "process",
+                    "path": "bash",
+                    "arguments": [
+                        "nmap-etcd.sh"
+                    ]
+                }
+            }
+        ]
+    },
+    "method": [
+		{
+            "type": "action",
+            "name": "delete-network-policies",
+            "provider": {
+                "type": "process",
+                "path": "echo",
+
+                    "arguments": [
+                        "kubectl networkpolicy -n my-test-ns -o short \\| xargs kubectl delete networkpolicy"
+                    ]
+            }
+        }
+    ],
+    "rollbacks": [
+        {
+            "type": "action",
+            "name": "restore-network-policies",
+            "provider": {
+                "type": "process",
+                "path": "echo",
+
+                    "arguments": [
+                        "kubectl apply -f my-networkpolicy/netpol-*.yaml"
+                    ]
+            }
+        }
+    ]
+}
